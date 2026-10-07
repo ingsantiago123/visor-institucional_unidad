@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Visor de unidad — U.INCCA</title>
+<meta name="description" content="Visor interactivo de los recursos de una unidad/semana de curso de la Universidad INCCA de Colombia: lecturas, videos, documentos y enlaces — contenido parametrizado por unidad.">
+<meta name="robots" content="noindex, follow">
+<meta name="theme-color" content="#040C38">
+<meta name="color-scheme" content="light">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+
+<link rel="stylesheet" href="./assets/css/styles.css">
+</head>
+<body>
+
+<noscript>
+  <div style="position:fixed;inset:0;background:#040C38;color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;padding:8vw;font-family:Roboto,Arial,sans-serif;z-index:9999">
+    <p>Este contenido interactivo necesita JavaScript habilitado en tu navegador para funcionar. Por favor actívalo y recarga la página.</p>
+  </div>
+</noscript>
+
+<div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+<!-- Flechas del mazo: burbujas contextuales que pasan a la diapositiva
+     anterior/siguiente y muestran su nombre + ícono (initDeck() los
+     reescribe en cada cambio). initDeck las muestra/oculta según haya
+     recurso a los lados; al hacer clic "explotan" (clase .is-popping)
+     antes de navegar. Los <span> bubble-pop-* son solo decoración de esa
+     animación. -->
+<button class="deck-arrow deck-arrow--prev" id="deckPrev" type="button" aria-label="Recurso anterior" hidden>
+  <span class="bubble-pop-flash" aria-hidden="true"></span>
+  <span class="bubble-pop-drops" aria-hidden="true">
+    <span class="bubble-pop-drop" style="--angle: 0deg;"></span>
+    <span class="bubble-pop-drop" style="--angle: 45deg;"></span>
+    <span class="bubble-pop-drop" style="--angle: 90deg;"></span>
+    <span class="bubble-pop-drop" style="--angle: 135deg;"></span>
+    <span class="bubble-pop-drop" style="--angle: 180deg;"></span>
+    <span class="bubble-pop-drop" style="--angle: 225deg;"></span>
+    <span class="bubble-pop-drop" style="--angle: 270deg;"></span>
+    <span class="bubble-pop-drop" style="--angle: 315deg;"></span>
+  </span>
+  <span class="deck-arrow-label">Anterior</span>
+  <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+</button>
+<button class="deck-arrow deck-arrow--next" id="deckNext" type="button" aria-label="Recurso siguiente" hidden>
+  <span class="bubble-pop-flash" aria-hidden="true"></span>
+  <span class="bubble-pop-drops" aria-hidden="true">
+    <span class="bubble-pop-drop" style="--angle: 0deg;"></span>
+    <span class="bubble-pop-drop" style="--angle: 45deg;"></span>
+    <span class="bubble-pop-drop" style="--angle: 90deg;"></span>
+    <span class="bubble-pop-drop" style="--angle: 135deg;"></span>
+    <span class="bubble-pop-drop" style="--angle: 180deg;"></span>
+    <span class="bubble-pop-drop" style="--angle: 225deg;"></span>
+    <span class="bubble-pop-drop" style="--angle: 270deg;"></span>
+    <span class="bubble-pop-drop" style="--angle: 315deg;"></span>
+  </span>
+  <span class="deck-arrow-label">Siguiente</span>
+  <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+</button>
+
+<!-- Riel de navegación: dock horizontal flotante y fijo abajo en
+     escritorio (barra fija arriba en móvil). A la izquierda, el panel
+     "recurso actual" (ícono + nombre + X/Y); a la derecha, un punto por
+     recurso — icono siempre visible, etiqueta que aparece al pasar el
+     cursor o en el activo. renderNav() lo llena (con un ítem "Inicio"
+     para el hero) e initDeck() centra el punto activo. -->
+<nav class="unit-rail" id="unitRail" aria-label="Índice de recursos de la unidad" hidden>
+  <div class="unit-rail-current" id="unitRailCurrent" aria-hidden="true">
+    <span class="unit-rail-current-icon" id="unitRailCurrentIcon"><i class="fa-solid fa-shapes"></i></span>
+    <span class="unit-rail-current-title" id="unitRailCurrentTitle"></span>
+    <span class="unit-rail-current-count" id="unitRailCurrentCount"></span>
+  </div>
+  <div class="unit-rail-track" id="unitRailTrack"></div>
+</nav>
+
+<!-- La pista del mazo, dentro de un envoltorio que solo recorta
+     (.unit-deck-clip) — el transform que la desplaza va en #unitMain, en
+     un nodo APARTE del que recorta, ver el comentario en styles.css.
+     Primera diapositiva: el hero (siempre, no ocultable). Segunda si no
+     hay recursos: el estado vacío. Luego, inyectadas por
+     renderContenido(), una <section.unit-section> por recurso. -->
+<div class="unit-deck-clip">
+  <main class="unit-main" id="unitMain">
+    <section class="unit-slide unit-slide--hero" id="heroSlide" aria-roledescription="diapositiva" aria-label="Inicio de la unidad" tabindex="-1">
+      <div class="unit-slide-scroll">
+        <header class="hero" id="hero">
+          <div class="hero-dots" aria-hidden="true"></div>
+          <div class="hero-blob hero-blob--gold" aria-hidden="true"></div>
+          <div class="hero-blob hero-blob--cyan" aria-hidden="true"></div>
+          <div class="hero-blob hero-blob--gold2" aria-hidden="true"></div>
+          <div class="hero-inner">
+            <a class="hero-back" id="heroBack" href="#" target="_blank" rel="noopener" hidden>
+              <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Volver a las unidades
+            </a>
+            <span class="hero-eyebrow">UNIDAD</span>
+            <h1 class="hero-title" id="heroUnidad">Nombre de la unidad</h1>
+            <p class="hero-subtitle" id="heroTitulo" hidden></p>
+            <p class="hero-desc" id="heroDescripcion"></p>
+          </div>
+        </header>
+        <div class="unit-stats-wrap" id="unitStatsWrap" hidden>
+          <div class="unit-stats" id="unitStats"></div>
+        </div>
+        <div class="hero-scrolltip" id="heroScrollTip" hidden>
+          <span>Explora con el riel o las flechas</span>
+          <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        </div>
+      </div>
+    </section>
+
+    <div class="unit-empty" id="unitEmpty" aria-roledescription="diapositiva" tabindex="-1" hidden>
+      <i class="fa-solid fa-box-open" aria-hidden="true"></i>
+      <p>Esta unidad todavía no tiene recursos.</p>
+    </div>
+  </main>
+</div>
+
+<div class="media-modal-overlay" id="mediaModalOverlay">
+  <div class="media-modal" role="dialog" aria-modal="true" aria-labelledby="mediaModalTitle">
+    <button class="media-modal-close" id="mediaModalClose" type="button" aria-label="Cerrar">
+      <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+    </button>
+    <h3 class="media-modal-title" id="mediaModalTitle"></h3>
+    <div class="media-modal-body" id="mediaModalBody"></div>
+    <a class="media-modal-go" id="mediaModalGo" href="#" target="_blank" rel="noopener" hidden>
+      <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Ir a la actividad
+    </a>
+  </div>
+</div>
+
+<!-- Modal propio de "lecturas" (embebido:true): una sola columna, el
+     documento ocupa casi todo el modal (nada de panel decorativo
+     compitiendo con el espacio de lectura) — ver openReadingModal() en
+     main.js. Distinto del modal genérico de arriba (ese lo siguen
+     usando video/documento/actividades). -->
+<div class="reading-modal-overlay" id="readingModalOverlay">
+  <div class="reading-modal" role="dialog" aria-modal="true" aria-labelledby="readingModalTitle">
+    <div class="reading-modal-header">
+      <span class="reading-modal-icon" aria-hidden="true"><i class="fa-solid fa-book-open-reader"></i></span>
+      <h3 class="reading-modal-title" id="readingModalTitle"></h3>
+      <a class="reading-modal-audio" id="readingModalAudio" href="#" target="_blank" rel="noopener" hidden>
+        <i class="fa-solid fa-headphones" aria-hidden="true"></i> <span>Audiolibro</span>
+      </a>
+      <button class="reading-modal-close" id="readingModalClose" type="button" aria-label="Cerrar">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="reading-modal-frame" id="readingModalFrame"></div>
+  </div>
+</div>
+
+<script src="./assets/js/main.js"></script>
+</body>
+</html>
