@@ -297,7 +297,7 @@
     let cuerpo = {};
     if (tipo === "texto") {
       cuerpo = {
-        parrafos: Array.isArray(r.parrafos) ? r.parrafos.filter(Boolean) : def.parrafos,
+        parrafos: Array.isArray(r.parrafos) ? r.parrafos.filter((p) => tieneTexto(p)) : def.parrafos,
         items: Array.isArray(r.items) ? r.items.map((it) => ({
           titulo: (it && it.titulo) || "",
           descripcion: (it && it.descripcion) || ""
