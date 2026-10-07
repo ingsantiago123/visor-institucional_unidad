@@ -42,37 +42,6 @@ bien, nunca a medias ni rotos.
 
 ---
 
-## Cómo probarlo en tu máquina
-
-No hace falta Moodle para ver el visor andando con datos reales:
-
-1. Abrí la carpeta raíz del repo (un nivel arriba de esta) con tu
-   editor y arrancá un servidor local — por ejemplo, la extensión
-   **Live Server** de VS Code (clic derecho sobre
-   `prueba-visor-unidad.html` → "Open with Live Server").
-2. `prueba-visor-unidad.html` es un HTML mínimo, un nivel arriba de esta
-   carpeta, con un solo `<iframe src="http://127.0.0.1:5500/visor unidad/index.html">`
-   que le pasa datos de ejemplo reales de una unidad completa (los 7
-   tipos de recurso, con links de verdad) a través de su atributo
-   `name` — exactamente como lo haría Moodle (ver la sección de abajo
-   para el porqué de `window.name`).
-3. Para probar tu propio JSON: abrí `prueba-visor-unidad.html`, editá el
-   objeto dentro del atributo `name='...'` del `<iframe>`. Ojo con el
-   escapado: ese archivo usa comillas simples para envolver el
-   atributo, y las comillas dobles PROPIAS del JSON van escapadas como
-   `&quot;` adentro (el mismo resultado que produce
-   `htmlspecialchars(json_encode($datos), ENT_QUOTES)` en PHP — ver la
-   forma recomendada de fijar `window.name`, más abajo). Guardá y Live
-   Server recarga solo.
-4. Si abrís `index.html` de este visor DIRECTO, sin pasar por
-   `prueba-visor-unidad.html` (o sea, sin que nada haya fijado
-   `window.name`), no vas a ver contenido real — vas a caer en los
-   placeholders genéricos (`SIN_DATOS`). Eso es lo esperado: sirve para
-   confirmar que el estado "sin datos" se ve bien, no para ver una
-   unidad real.
-
----
-
 ## Cómo llegan los datos: `window.name`, a fondo
 
 ### Por qué `window.name` y no la URL ni `postMessage`
