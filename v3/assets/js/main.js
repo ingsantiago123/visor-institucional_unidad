@@ -1,5 +1,5 @@
 /*!
- * U.INCCA · Visor de unidad v3 (3.0.2) — JavaScript propio, sin dependencias.
+ * U.INCCA · Visor de unidad v3 (3.1.0) — JavaScript propio, sin dependencias.
  * ---------------------------------------------------------------------
  * Mismo contrato que v2 (todo llega como UN objeto JSON en window.name,
  * lo imprime local_visorincca en el atributo name del iframe):
@@ -30,7 +30,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "3.0.2";
+  const VERSION = "3.1.0";
   const $ = (sel, ctx) => (ctx || document).querySelector(sel);
   const $$ = (sel, ctx) => Array.from((ctx || document).querySelectorAll(sel));
   const reducido = () => !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -330,6 +330,61 @@
   }
 
   /* ---------------------------------------------------------------------
+   * 2b. (3.1.0) Videos de Google Drive en pantallas chicas. El reproductor de
+   *     Drive no se adapta a un celular ni a un espacio de menos de 300 px
+   *     (controles cortados, pide abrir aparte): ahi el video NO se embebe y se
+   *     abre directo en Drive, igual que los enlaces "Ver video" de la
+   *     plantilla de Moodle. YouTube y Vimeo se siguen viendo dentro del visor.
+   *     Mismo bloque en el visor de curso (recurso v4).
+   * ------------------------------------------------------------------- */
+  const ANCHO_MINIMO_VIDEO = 300;
+  const consultaMovil = window.matchMedia
+    ? window.matchMedia("(max-width: 767.98px), (pointer: coarse) and (max-height: 500px)") : null;
+  // Ancho que tendria el reproductor: el dialogo mide min(1100 px, 94 %); en celular, todo el ancho.
+  function anchoReproductor() {
+    const w = window.innerWidth || document.documentElement.clientWidth || 0;
+    return Math.min(1100, w < 600 ? w : w * 0.94);
+  }
+  function videosEnDrive() {
+    return !!(consultaMovil && consultaMovil.matches) || anchoReproductor() < ANCHO_MINIMO_VIDEO;
+  }
+  function esVideoDrive(url) {
+    const embed = toEmbedUrl(url);
+    return !!embed && origenVideo(embed) === "drive";
+  }
+  // Controles de video de Drive: su texto y su aria-label dicen a donde llevan segun el modo.
+  const controlesDrive = [];
+  function marcarVideoDrive(control, textoEl) {
+    if (!control) return;
+    control.dataset.ariaVisor = control.getAttribute("aria-label") || "";
+    if (textoEl) control.dataset.textoVisor = textoEl.textContent;
+    controlesDrive.push({ control, textoEl });
+    pintarVideoDrive(controlesDrive[controlesDrive.length - 1], videosEnDrive());
+  }
+  function pintarVideoDrive(c, afuera) {
+    c.control.classList.toggle("abre-drive", afuera);
+    const aria = c.control.dataset.ariaVisor;
+    if (aria) {
+      const enDrive = /^Reproducir/i.test(aria) ? aria.replace(/^Reproducir(:)?\s*/i, (m, dosp) => (dosp ? "Abrir en Google Drive: " : "Abrir en Google Drive ")) : aria + " (se abre en Google Drive)";
+      c.control.setAttribute("aria-label", afuera ? enDrive : aria);
+    }
+    if (c.textoEl) c.textoEl.textContent = afuera ? "Ver en Google Drive ↗" : c.control.dataset.textoVisor;
+  }
+  function initVideosDrive() {
+    let pendiente = false;
+    const actualizar = () => {
+      pendiente = false;
+      const afuera = videosEnDrive();
+      document.documentElement.classList.toggle("videos-en-drive", afuera);
+      controlesDrive.forEach((c) => pintarVideoDrive(c, afuera));
+    };
+    const programar = () => { if (!pendiente) { pendiente = true; requestAnimationFrame(actualizar); } };
+    window.addEventListener("resize", programar);
+    if (consultaMovil && consultaMovil.addEventListener) consultaMovil.addEventListener("change", programar);
+    actualizar();
+  }
+
+  /* ---------------------------------------------------------------------
    * 3. Medios bajo demanda, lectura y dialogos (los del visor de curso)
    * ------------------------------------------------------------------- */
   function cargarImagenes(raiz) {
@@ -397,8 +452,13 @@
   function abrirVideo(url, titulo, disparador) {
     const embed = toEmbedUrl(url);
     if (!embed) return;
-    const d = $("#dialogoVideo");
     const origen = origenVideo(embed);
+    // Drive en celular o en menos de 300 px: el video se abre en Drive (ver 2b).
+    if (origen === "drive" && videosEnDrive()) {
+      window.open(enlaceExterno(embed) || urlSegura(url), "_blank", "noopener");
+      return;
+    }
+    const d = $("#dialogoVideo");
     const nombre = decodificar(titulo) || "Video";
     $("#dialogoVideoTitulo").textContent = nombre;
     const externo = enlaceExterno(embed);
@@ -915,7 +975,7 @@
     const nombre = texto(it.titulo || r.titulo);
     return `
       <figure class="unidad-video${grande ? " unidad-video--grande" : ""}" style="--i:${i}">
-        <button class="video-tarjeta" type="button" data-video="${esc(r.id)}" data-item="${i}" aria-label="Reproducir: ${nombre}"${embed ? "" : " disabled"}>
+        <button class="video-tarjeta" type="button" data-video="${esc(r.id)}" data-item="${i}" aria-label="Reproducir: ${nombre}"${embed ? "" : " disabled"}${embed && origenVideo(embed) === "drive" ? " data-drive" : ""}>
           ${portada && portada !== "#" ? `<img data-src="${esc(portada)}" alt="" decoding="async">` : ""}
           <span class="boton-play" aria-hidden="true">${PLAY_SVG}</span>
           <span class="video-tarjeta-texto">${grande ? "Video destacado" : "Ver video"}</span>
@@ -1027,18 +1087,31 @@
                 ${audioHtml(it, true)}
               </li>`).join("")}</ol></div></div></div>`;
       }
-      // Apoyo: tarjetas (panel azul sobre la escena clara), con el audiolibro a la vista.
+      // Apoyo: el LIBRO de v2 (pedido del usuario). Cada lectura es un librito: dos hojas sueltas
+      // detras simulan la pila de papel y la tapa gira sobre su lomo al pasar el raton, dejando ver una
+      // pagina con renglones. Se nota de un vistazo que es una LECTURA, no un enlace mas.
       return `
         ${cabeza(r, p, t, true, intro)}
-        <div class="unidad-lecturas" role="list">${r.items.map((it, i) => `
-          <article class="panel unidad-lectura" role="listitem" style="--i:${i}">
-            <span class="unidad-lectura-icono" aria-hidden="true"><i class="fa-solid fa-book-open-reader"></i><span>PDF</span></span>
-            <h3 class="unidad-lectura-titulo">${texto(it.titulo)}</h3>
-            ${it.fuente ? `<span class="unidad-enlace-fuente">${texto(it.fuente)}</span>` : ""}
-            <div class="unidad-lectura-acciones">
-              ${lecturaAbrir(r, it, i, `${it.embebido ? "Leer aquí" : "Abrir la lectura"} <i class="fa-solid ${it.embebido ? "fa-arrow-right" : "fa-arrow-up-right-from-square"}" aria-hidden="true"></i>`, "enlace-mas")}
-              ${audioHtml(it, false)}
-            </div>
+        <div class="unidad-libros" role="list">${r.items.map((it, i) => `
+          <article class="unidad-libro" role="listitem" style="--i:${i}">
+            ${lecturaAbrir(r, it, i, `
+              <span class="unidad-libro-portada" aria-hidden="true">
+                <span class="unidad-libro-hoja unidad-libro-hoja--1"></span>
+                <span class="unidad-libro-hoja unidad-libro-hoja--2"></span>
+                <span class="unidad-libro-pagina">
+                  <span style="width:72%"></span><span style="width:90%"></span><span style="width:58%"></span><span style="width:82%"></span>
+                </span>
+                <span class="unidad-libro-tapa">
+                  <span class="unidad-libro-sello">PDF</span>
+                  <i class="fa-solid fa-book-open-reader"></i>
+                  <span class="unidad-libro-numero">${dos(i + 1)}</span>
+                </span>
+              </span>
+              <span class="unidad-libro-titulo">${texto(it.titulo)}</span>
+              ${it.fuente ? `<span class="unidad-libro-fuente">${texto(it.fuente)}</span>` : ""}
+              <span class="unidad-libro-cta">${it.embebido ? "Leer aquí" : "Abrir la lectura"} <i class="fa-solid ${it.embebido ? "fa-arrow-right" : "fa-arrow-up-right-from-square"}" aria-hidden="true"></i></span>`,
+              "unidad-libro-abrir")}
+            ${audioHtml(it, false)}
           </article>`).join("")}
         </div>`;
     },
@@ -1103,7 +1176,7 @@
     if (!url || url === "#") return "";
     return compacto
       ? `<a class="unidad-audio unidad-audio--icono" href="${attrUrl(url)}" target="_blank" rel="noopener" title="Escuchar el audiolibro" aria-label="Escuchar el audiolibro: ${texto(it.titulo)}"><i class="fa-solid fa-headphones" aria-hidden="true"></i></a>`
-      : `<a class="pildora unidad-audio" href="${attrUrl(url)}" target="_blank" rel="noopener"><span class="pildora-icono"><i class="fa-solid fa-headphones" aria-hidden="true"></i></span> Audiolibro</a>`;
+      : `<a class="unidad-libro-audio" href="${attrUrl(url)}" target="_blank" rel="noopener" aria-label="Escuchar el audiolibro: ${texto(it.titulo)}"><i class="fa-solid fa-headphones" aria-hidden="true"></i> Escuchar audiolibro</a>`;
   }
 
   function actividadHtml(r, it, i, una) {
@@ -1286,6 +1359,10 @@
     SLIDES = [{ id: "hero", label: "Inicio", icon: "fa-house", escena: "inicio" }];
     paso("recursos", () => renderRecursos(datos));
     paso("inicio", () => renderInicio(datos));
+    paso("videos_drive", () => {
+      $$(".video-tarjeta[data-drive]").forEach((b) => marcarVideoDrive(b, $(".video-tarjeta-texto", b)));
+      initVideosDrive();
+    });
     paso("interacciones", initInteracciones);
     paso("navegacion", renderNavegacion);
     paso("dialogos", initDialogos);
