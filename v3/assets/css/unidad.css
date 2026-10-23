@@ -364,13 +364,19 @@ a.enlace-mas { margin-top: 0; }
   .unidad-inicio-grid { grid-template-columns: minmax(0, 1fr) minmax(250px, 330px); }
 }
 @media (max-width: 900px) {
-  .unidad-texto-grid, .unidad-destacado, .unidad-multimedia { grid-template-columns: minmax(0, 1fr); }
+  .unidad-inicio-grid, .unidad-texto-grid, .unidad-destacado, .unidad-multimedia { grid-template-columns: minmax(0, 1fr); }
   .unidad-cabeza .titulo { max-width: none; }
   /* La diapositiva entera se desplaza: las cajas internas ya no limitan el alto. */
   .unidad-parrafos, .unidad-columna-lectura, .unidad-enlaces-lectura { max-height: none; overflow: visible; padding-right: 0; }
   .unidad-documento .medio-marco { height: 60vh; }
-  .unidad-emblema { width: 170px; }
-  .unidad-inicio-lado { width: 100%; }
+  /* Inicio en una columna: emblema arriba (chico), luego el texto y al final la ficha. */
+  .unidad-inicio-lado { display: contents; }
+  .unidad-emblema { order: -1; width: clamp(110px, 30vw, 150px); margin-bottom: -6px; }
+  .unidad-ficha { order: 2; }
+  #heroEtiqueta { display: none; } /* el emblema ya dice "Semana" o "Unidad" */
+  .inicio-texto { order: 1; }
+  .unidad-emblema .emblema-num { font-size: clamp(36px, 11vw, 48px); }
+  .unidad-emblema .emblema-etiqueta { font-size: 9px; letter-spacing: .2em; }
   .unidad-ficha { max-width: 520px; width: 100%; }
 }
 @media (max-width: 600px) {
@@ -378,6 +384,13 @@ a.enlace-mas { margin-top: 0; }
   .unidad-lectura { min-height: 0; padding: 20px; }
   .unidad-leccion-texto { margin-left: 0; }
   .unidad-paso { display: none; }
+  .unidad-video--grande .video-tarjeta .boton-play { width: 76px; height: 76px; }
+  .unidad-columna { padding: 16px 14px 14px; }
+  .unidad-enlaces-panel { padding: 6px; }
+  .unidad-enlaces-lectura { padding: 2px; }
+  .unidad-enlace-num { min-width: 20px; }
+  .unidad-documento .medio-marco { height: 52vh; }
+  .nav-item.is-active .nav-item-texto { max-width: 140px; }
 }
 @media (max-height: 760px) and (min-width: 901px) {
   .unidad-emblema { width: clamp(150px, 26vh, 220px); }
