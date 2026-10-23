@@ -1,0 +1,7 @@
+Fuentes incluidas (SIL Open Font License 1.1, se pueden alojar y redistribuir):
+- Jost (Indestructible Type), sustituto libre de Futura para textos: https://fonts.google.com/specimen/Jost
+- Outfit (On Brand Investments), sustituto libre de Scandia para titulos: https://fonts.google.com/specimen/Outfit
+Si el equipo tiene instaladas Scandia o Futura (Manual de Imagen 2024), el visor las usa primero.
+
+Font Awesome Free 6.7.2 (assets/vendor/fontawesome): iconos CC BY 4.0, fuentes SIL OFL 1.1, codigo MIT.
+https://fontawesome.com/license/free

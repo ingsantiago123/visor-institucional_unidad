@@ -1,0 +1,342 @@
+/*! INCCA Design Tokens v1.0.0 - GENERADO por tools/build.js desde src/incca.tokens.json. No editar a mano. */
+:root {
+  --ic-brand-night: #040B3C; /* Azul noche: fondo oscuro base, texto oscuro sobre botones luminosos */
+  --ic-brand-abyss: #071936; /* Azul abismo: velos y fondos profundos */
+  --ic-brand-royal: #0B349D; /* Azul institucional: acento sobre claro, iconos, botones sobre claro */
+  --ic-brand-blue: #2B8BFA; /* Azul brillante: enlaces, info, fin de degradados */
+  --ic-brand-cyan: #65CBE3; /* Cian: titulos y acentos sobre oscuro */
+  --ic-brand-ice: #A8EAF4; /* Cian hielo: numeros, iconos de apoyo */
+  --ic-brand-aqua: #00FFE7; /* Aqua: acento vivo, foco sobre oscuro. Usar con moderacion */
+  --ic-brand-gold: #CBB54E; /* Oro: UNICO acento calido de la marca */
+  --ic-brand-gold-light: #E3D27A;
+  --ic-brand-mist: #E6E5E2; /* Gris niebla: fondo claro */
+  --ic-brand-panel-a: #1B3B5A; /* Panel azul, inicio del degradado */
+  --ic-brand-panel-b: #202A49; /* Panel azul, final del degradado */
+  --ic-brand-white: #FEFEFE; /* Blanco de marca (no usar #FFF puro en texto) */
+  --ic-text-on-dark-strong: #F2F4F7;
+  --ic-text-on-dark: #D7E4F5;
+  --ic-text-on-dark-muted: #B8CBE0;
+  --ic-text-on-panel: #E9EEF4;
+  --ic-text-on-button-dark: #071224; /* Texto sobre botones luminosos (cian, blanco, aqua) */
+  --ic-text-on-button-light: #FFFFFF; /* Texto sobre botones azules (royal) */
+  --ic-text-on-light-strong: #26345A; /* Tinta: titulos sobre claro */
+  --ic-text-on-light: #3D4766; /* Parrafos sobre claro */
+  --ic-text-on-light-muted: #555E7A; /* Secundario sobre claro. Oscurecido respecto al visor v3 (#6A7085 daba 3.8:1) para llegar a */
+  --ic-status-success: #10B981;
+  --ic-status-warning: #F59E0B;
+  --ic-status-danger: #EF4444;
+  --ic-status-info: #2B8BFA;
+  --ic-category-c1: #8FB8FF; /* quiz */
+  --ic-category-c2: #65CBE3; /* tarea */
+  --ic-category-c3: #00E5CF; /* foro */
+  --ic-category-c4: #B4A6FF; /* taller */
+  --ic-category-c5: #CBB54E; /* entrega */
+  --ic-category-c6: #FF8C7A; /* examen */
+  --ic-legacy-orange: #F9A032; /* Naranja de Plus. El visor v3 lo unifico con el oro */
+  --ic-legacy-magenta: #FF00FF; /* Magenta de Plus (chat, gamificacion) */
+  --ic-gradient-light: linear-gradient(135deg, #FEFEFE 0%, #65CBE3 52%, #65CBE3 100%); /* Boton principal sobre oscuro */
+  --ic-gradient-tide: linear-gradient(135deg, #FEFEFE 0%, #65CBE3 68%, #0B349D 100%); /* Boton CTA */
+  --ic-gradient-aqua: linear-gradient(135deg, #00FFE7 0%, #2B8BFA 100%); /* Boton sobre panel azul */
+  --ic-gradient-royal: linear-gradient(135deg, #0B349D 0%, #2B8BFA 100%); /* Boton principal sobre claro (texto blanco) */
+  --ic-gradient-accent: linear-gradient(90deg, #00FFE7 0%, #2B8BFA 55%, #CBB54E 100%); /* Subrayados, progreso, filetes (sobre oscuro) */
+  --ic-gradient-accent-light: linear-gradient(90deg, #0B349D 0%, #2B8BFA 68%, #00FFE7 100%); /* Subrayados sobre claro */
+  --ic-gradient-panel: linear-gradient(135deg, #1B3B5A 0%, #202A49 100%); /* Tarjeta/panel azul */
+  --ic-gradient-paper: linear-gradient(180deg, #FFFFFF 0%, #F3F5F8 100%); /* Carta clara */
+  --ic-gradient-gold-text: linear-gradient(180deg, #EBDD94 0%, #CBB54E 58%, #A58540 100%); /* Texto dorado (iniciales) */
+  --ic-gradient-veil-left: linear-gradient(90deg, rgba(4,11,60,0.9) 0%, rgba(4,11,60,0.8) 34%, rgba(4,11,60,0.4) 65%, rgba(4,11,60,0) 100%); /* Velo sobre foto: opaco a la izquierda (texto a la izquierda) */
+  --ic-gradient-veil-right: linear-gradient(90deg, rgba(4,11,60,0) 0%, rgba(4,11,60,0.6) 34%, rgba(4,11,60,0.8) 65%, rgba(4,11,60,0.9) 100%); /* Velo espejado (texto a la derecha) */
+  --ic-gradient-veil-flat: linear-gradient(180deg, rgba(4,11,60,0.86) 0%, rgba(4,11,60,0.92) 100%); /* Velo casi uniforme (contenido denso) */
+  --ic-gradient-veil-down: linear-gradient(180deg, rgba(4,11,60,0.66) 0%, rgba(4,11,60,0.84) 42%, rgba(4,11,60,0.93) 100%); /* Velo vertical: se usa en pantallas angostas */
+  --ic-gradient-veil-light-left: linear-gradient(90deg, rgba(255,255,255,0.99) 0%, rgba(230,229,226,0.99) 34%, rgba(230,229,226,0.4) 65%, rgba(230,229,226,0) 100%); /* Velo claro, texto a la izquierda */
+  --ic-gradient-veil-light-down: linear-gradient(180deg, rgba(255,255,255,0.86) 0%, rgba(230,229,226,0.96) 38%, rgba(230,229,226,0.99) 100%); /* Velo claro vertical (pantallas angostas) */
+  --ic-gradient-title-text: linear-gradient(120deg, #FFFFFF 8%, #CFF3F8 46%, #65CBE3 100%); /* Texto de titulo protagonista sobre oscuro */
+  --ic-font-title: Scandia, Outfit, "Segoe UI", system-ui, -apple-system, sans-serif; /* Titulos. Scandia (manual 2024) si esta instalada; Outfit es el sustituto libre (OFL) inclu */
+  --ic-font-text: "Futura PT", Futura, Jost, "Segoe UI", system-ui, -apple-system, sans-serif; /* Texto. Futura si esta instalada; Jost es el sustituto libre (OFL) incluido */
+  --ic-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --ic-font-weight-regular: 400;
+  --ic-font-weight-medium: 500;
+  --ic-font-weight-semibold: 600;
+  --ic-font-weight-bold: 700;
+  --ic-font-weight-extrabold: 800;
+  --ic-type-display-size: clamp(2.75rem, calc(2.75rem + 2 * (100vw - 22.5rem) / 67.5), 4.75rem);
+  --ic-type-display-lh: 1.02;
+  --ic-type-display-ls: -0.026em;
+  --ic-type-display-weight: 700;
+  --ic-type-h1-size: clamp(2.125rem, calc(2.125rem + 1.375 * (100vw - 22.5rem) / 67.5), 3.5rem);
+  --ic-type-h1-lh: 1.05;
+  --ic-type-h1-ls: -0.025em;
+  --ic-type-h1-weight: 700;
+  --ic-type-h2-size: clamp(1.625rem, calc(1.625rem + 0.875 * (100vw - 22.5rem) / 67.5), 2.5rem);
+  --ic-type-h2-lh: 1.1;
+  --ic-type-h2-ls: -0.02em;
+  --ic-type-h2-weight: 700;
+  --ic-type-h3-size: clamp(1.25rem, calc(1.25rem + 0.375 * (100vw - 22.5rem) / 67.5), 1.625rem);
+  --ic-type-h3-lh: 1.2;
+  --ic-type-h3-ls: -0.01em;
+  --ic-type-h3-weight: 700;
+  --ic-type-h4-size: clamp(1rem, calc(1rem + 0.125 * (100vw - 22.5rem) / 67.5), 1.125rem);
+  --ic-type-h4-lh: 1.28;
+  --ic-type-h4-ls: 0;
+  --ic-type-h4-weight: 700;
+  --ic-type-lead-size: clamp(1rem, calc(1rem + 0.188 * (100vw - 22.5rem) / 67.5), 1.188rem);
+  --ic-type-lead-lh: 1.7;
+  --ic-type-lead-ls: 0;
+  --ic-type-lead-weight: 400;
+  --ic-type-body-size: clamp(0.938rem, calc(0.938rem + 0.063 * (100vw - 22.5rem) / 67.5), 1rem);
+  --ic-type-body-lh: 1.6;
+  --ic-type-body-ls: 0;
+  --ic-type-body-weight: 400;
+  --ic-type-small-size: clamp(0.813rem, calc(0.813rem + 0.063 * (100vw - 22.5rem) / 67.5), 0.875rem);
+  --ic-type-small-lh: 1.5;
+  --ic-type-small-ls: 0;
+  --ic-type-small-weight: 400;
+  --ic-type-caption-size: clamp(0.75rem, calc(0.75rem + 0.031 * (100vw - 22.5rem) / 67.5), 0.781rem);
+  --ic-type-caption-lh: 1.4;
+  --ic-type-caption-ls: 0.01em;
+  --ic-type-caption-weight: 500;
+  --ic-type-eyebrow-size: clamp(0.688rem, calc(0.688rem + 0.063 * (100vw - 22.5rem) / 67.5), 0.75rem);
+  --ic-type-eyebrow-lh: 1.2;
+  --ic-type-eyebrow-ls: 0.2em;
+  --ic-type-eyebrow-weight: 700;
+  --ic-type-button-size: 0.875rem;
+  --ic-type-button-lh: 1;
+  --ic-type-button-ls: 0.01em;
+  --ic-type-button-weight: 700;
+  --ic-space-3xs: 2px;
+  --ic-space-2xs: 4px;
+  --ic-space-xs: 8px;
+  --ic-space-sm: 12px;
+  --ic-space-md: 16px;
+  --ic-space-lg: 24px;
+  --ic-space-xl: 32px;
+  --ic-space-2xl: 48px;
+  --ic-space-3xl: 64px;
+  --ic-space-4xl: 96px;
+  --ic-radius-xs: 8px; /* DERIVADO: chips pequenos, checkbox */
+  --ic-radius-sm: 12px; /* Inputs, botones rectangulares, tooltips */
+  --ic-radius-md: 18px; /* Tarjetas, fichas */
+  --ic-radius-lg: 24px; /* Paneles, dialogos */
+  --ic-radius-xl: 28px; /* Carta, superficies protagonistas */
+  --ic-radius-pill: 9999px; /* Botones, chips, barras flotantes */
+  --ic-radius-round: 50%; /* Avatares, play, iconos circulares */
+  --ic-size-control-sm: 40px;
+  --ic-size-control-md: 48px; /* Alto estandar de botones e inputs */
+  --ic-size-control-lg: 56px;
+  --ic-size-touch-min: 44px; /* Objetivo tactil minimo (nunca menos, aunque el dibujo sea mas chico) */
+  --ic-size-icon-sm: 16px;
+  --ic-size-icon-md: 20px;
+  --ic-size-icon-lg: 24px;
+  --ic-size-icon-xl: 32px;
+  --ic-border-hairline: 1px;
+  --ic-border-strong: 2px;
+  --ic-border-focus: 3px;
+  --ic-shadow-card: 0 12px 30px 0 rgba(4,11,60,0.18), inset 0 1px 0 0 rgba(255,255,255,0.06);
+  --ic-shadow-panel: 0 20px 45px 0 rgba(4,11,60,0.22), inset 0 1px 0 0 rgba(255,255,255,0.07);
+  --ic-shadow-float: 0 14px 36px 0 rgba(2,6,30,0.35);
+  --ic-shadow-modal: 0 30px 100px 0 rgba(0,0,0,0.5);
+  --ic-shadow-glow-cyan: 0 0 25px 0 rgba(101,203,227,0.18);
+  --ic-shadow-glow-aqua: 0 0 30px 0 rgba(0,255,231,0.18), 0 0 8px 0 rgba(43,139,250,0.14);
+  --ic-shadow-button: 0 10px 30px 0 rgba(101,203,227,0.18);
+  --ic-motion-duration-instant: 100ms;
+  --ic-motion-duration-fast: 200ms;
+  --ic-motion-duration-base: 300ms;
+  --ic-motion-duration-slow: 550ms;
+  --ic-motion-duration-enter: 800ms;
+  --ic-motion-stagger: 100ms; /* Retraso entre elementos que entran en secuencia */
+  --ic-motion-ease-standard: cubic-bezier(0.16, 0.84, 0.44, 1); /* Entradas y hovers (la mas usada) */
+  --ic-motion-ease-soft: cubic-bezier(0.2, 0.8, 0.2, 1); /* Fundidos de fondo */
+  --ic-motion-ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1); /* Rebote leve: solo nodos y botones pequenos */
+  --ic-breakpoint-medium: 600px;
+  --ic-breakpoint-expanded: 900px;
+  --ic-breakpoint-large: 1200px;
+  --ic-breakpoint-xlarge: 1600px;
+  --ic-layout-content-max: 1400px;
+  --ic-layout-reading-max: 720px; /* Ancho maximo de texto corrido (aprox. 65 caracteres) */
+  --ic-layout-gutter: clamp(22px, calc(22px + 58 * (100vw - 360px) / 1080), 80px); /* Margen lateral: 5vw acotado */
+  --ic-z-base: 0;
+  --ic-z-content: 2;
+  --ic-z-sticky: 30;
+  --ic-z-nav: 45;
+  --ic-z-dialog: 100;
+  --ic-z-toast: 110;
+}
+
+/* Tema oscuro (por defecto). Tambien lo aplican las superficies siempre oscuras. */
+:root,
+[data-ic-theme="dark"],
+.ic-surface-dark,
+.ic-card,
+.ic-play,
+.ic-stat,
+.ic-step__body,
+.ic-scene {
+  color-scheme: dark;
+  --ic-bg: #040B3C;
+  --ic-bg-deep: #071936;
+  --ic-text: #F2F4F7;
+  --ic-text-soft: #D7E4F5;
+  --ic-text-muted: #B8CBE0;
+  --ic-accent: #65CBE3;
+  --ic-accent-strong: #00FFE7;
+  --ic-warm: #CBB54E;
+  --ic-focus: #00FFE7;
+  --ic-link: #65CBE3;
+  --ic-border: rgba(101,203,227,0.22);
+  --ic-border-soft: rgba(255,255,255,0.1);
+  --ic-surface-1: rgba(255,255,255,0.05);
+  --ic-surface-2: rgba(255,255,255,0.1);
+  --ic-glass: rgba(4,11,60,0.52);
+  --ic-glass-border: rgba(255,255,255,0.14);
+  --ic-input-bg: rgba(255,255,255,0.06);
+  --ic-input-border: rgba(101,203,227,0.6);
+  --ic-accent-line: linear-gradient(90deg, #00FFE7 0%, #2B8BFA 55%, #CBB54E 100%);
+  --ic-button-bg: linear-gradient(135deg, #FEFEFE 0%, #65CBE3 52%, #65CBE3 100%);
+  --ic-on-button: #071224;
+  --ic-success: #10B981;
+  --ic-warning: #F59E0B;
+  --ic-danger: #EF4444;
+  --ic-info: #2B8BFA;
+  --ic-on-danger: #071224;
+  --ic-surface-solid: #0A1244;
+  --ic-scrim: rgba(2,6,24,0.84);
+}
+
+/* Tema claro. Tambien lo aplican las superficies siempre claras (despues del oscuro: gana). */
+[data-ic-theme="light"],
+.ic-surface-light,
+.ic-card--paper,
+.ic-scene--light {
+  color-scheme: light;
+  --ic-bg: #E6E5E2;
+  --ic-bg-deep: #D8D7D3;
+  --ic-text: #26345A;
+  --ic-text-soft: #3D4766;
+  --ic-text-muted: #555E7A;
+  --ic-accent: #0B349D;
+  --ic-accent-strong: #2B8BFA;
+  --ic-warm: #6F6118;
+  --ic-focus: #0B349D;
+  --ic-link: #0B349D;
+  --ic-border: rgba(38,52,90,0.14);
+  --ic-border-soft: rgba(38,52,90,0.08);
+  --ic-surface-1: rgba(255,255,255,0.6);
+  --ic-surface-2: rgba(255,255,255,0.9);
+  --ic-glass: rgba(255,255,255,0.72);
+  --ic-glass-border: rgba(38,52,90,0.12);
+  --ic-input-bg: #FFFFFF;
+  --ic-input-border: rgba(38,52,90,0.6);
+  --ic-accent-line: linear-gradient(90deg, #0B349D 0%, #2B8BFA 68%, #00FFE7 100%);
+  --ic-button-bg: linear-gradient(135deg, #0B349D 0%, #2B8BFA 100%);
+  --ic-on-button: #FFFFFF;
+  --ic-success: #0B7A55;
+  --ic-warning: #9A5B00;
+  --ic-danger: #B42318;
+  --ic-info: #0B349D;
+  --ic-on-danger: #FFFFFF;
+  --ic-surface-solid: #FBFBFA;
+  --ic-scrim: rgba(4,11,60,0.55);
+}
+
+/* Impresion: siempre tema claro y sin degradados de fondo */
+@media print {
+  :root,
+  [data-ic-theme] {
+    color-scheme: light;
+    --ic-bg: #E6E5E2;
+    --ic-bg-deep: #D8D7D3;
+    --ic-text: #26345A;
+    --ic-text-soft: #3D4766;
+    --ic-text-muted: #555E7A;
+    --ic-accent: #0B349D;
+    --ic-accent-strong: #2B8BFA;
+    --ic-warm: #6F6118;
+    --ic-focus: #0B349D;
+    --ic-link: #0B349D;
+    --ic-border: rgba(38,52,90,0.14);
+    --ic-border-soft: rgba(38,52,90,0.08);
+    --ic-surface-1: rgba(255,255,255,0.6);
+    --ic-surface-2: rgba(255,255,255,0.9);
+    --ic-glass: rgba(255,255,255,0.72);
+    --ic-glass-border: rgba(38,52,90,0.12);
+    --ic-input-bg: #FFFFFF;
+    --ic-input-border: rgba(38,52,90,0.6);
+    --ic-accent-line: linear-gradient(90deg, #0B349D 0%, #2B8BFA 68%, #00FFE7 100%);
+    --ic-button-bg: linear-gradient(135deg, #0B349D 0%, #2B8BFA 100%);
+    --ic-on-button: #FFFFFF;
+    --ic-success: #0B7A55;
+    --ic-warning: #9A5B00;
+    --ic-danger: #B42318;
+    --ic-info: #0B349D;
+    --ic-on-danger: #FFFFFF;
+    --ic-surface-solid: #FBFBFA;
+    --ic-scrim: rgba(4,11,60,0.55);
+  }
+}
+
+/* Tema automatico: sigue la preferencia del sistema */
+@media (prefers-color-scheme: light) {
+  [data-ic-theme="auto"] {
+    color-scheme: light;
+    --ic-bg: #E6E5E2;
+    --ic-bg-deep: #D8D7D3;
+    --ic-text: #26345A;
+    --ic-text-soft: #3D4766;
+    --ic-text-muted: #555E7A;
+    --ic-accent: #0B349D;
+    --ic-accent-strong: #2B8BFA;
+    --ic-warm: #6F6118;
+    --ic-focus: #0B349D;
+    --ic-link: #0B349D;
+    --ic-border: rgba(38,52,90,0.14);
+    --ic-border-soft: rgba(38,52,90,0.08);
+    --ic-surface-1: rgba(255,255,255,0.6);
+    --ic-surface-2: rgba(255,255,255,0.9);
+    --ic-glass: rgba(255,255,255,0.72);
+    --ic-glass-border: rgba(38,52,90,0.12);
+    --ic-input-bg: #FFFFFF;
+    --ic-input-border: rgba(38,52,90,0.6);
+    --ic-accent-line: linear-gradient(90deg, #0B349D 0%, #2B8BFA 68%, #00FFE7 100%);
+    --ic-button-bg: linear-gradient(135deg, #0B349D 0%, #2B8BFA 100%);
+    --ic-on-button: #FFFFFF;
+    --ic-success: #0B7A55;
+    --ic-warning: #9A5B00;
+    --ic-danger: #B42318;
+    --ic-info: #0B349D;
+    --ic-on-danger: #FFFFFF;
+    --ic-surface-solid: #FBFBFA;
+    --ic-scrim: rgba(4,11,60,0.55);
+  }
+}
+@media (prefers-color-scheme: dark) {
+  [data-ic-theme="auto"] {
+    color-scheme: dark;
+    --ic-bg: #040B3C;
+    --ic-bg-deep: #071936;
+    --ic-text: #F2F4F7;
+    --ic-text-soft: #D7E4F5;
+    --ic-text-muted: #B8CBE0;
+    --ic-accent: #65CBE3;
+    --ic-accent-strong: #00FFE7;
+    --ic-warm: #CBB54E;
+    --ic-focus: #00FFE7;
+    --ic-link: #65CBE3;
+    --ic-border: rgba(101,203,227,0.22);
+    --ic-border-soft: rgba(255,255,255,0.1);
+    --ic-surface-1: rgba(255,255,255,0.05);
+    --ic-surface-2: rgba(255,255,255,0.1);
+    --ic-glass: rgba(4,11,60,0.52);
+    --ic-glass-border: rgba(255,255,255,0.14);
+    --ic-input-bg: rgba(255,255,255,0.06);
+    --ic-input-border: rgba(101,203,227,0.6);
+    --ic-accent-line: linear-gradient(90deg, #00FFE7 0%, #2B8BFA 55%, #CBB54E 100%);
+    --ic-button-bg: linear-gradient(135deg, #FEFEFE 0%, #65CBE3 52%, #65CBE3 100%);
+    --ic-on-button: #071224;
+    --ic-success: #10B981;
+    --ic-warning: #F59E0B;
+    --ic-danger: #EF4444;
+    --ic-info: #2B8BFA;
+    --ic-on-danger: #071224;
+    --ic-surface-solid: #0A1244;
+    --ic-scrim: rgba(2,6,24,0.84);
+  }
+}

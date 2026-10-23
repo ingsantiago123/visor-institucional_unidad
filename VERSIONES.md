@@ -9,6 +9,7 @@ propia carpeta y Moodle apunta a una carpeta fija.
 |---|---|
 | `/v1/` | Copia exacta del visor que estaba en produccion el 2026-10-07 (repos *_prueba_piloto). |
 | `/v2/` | Version 2.0.1 (en piloto): sin contenido de ejemplo en cursos reales, videos bajo demanda, animaciones en pausa fuera de pantalla, texto escapado, puente postMessage v2 (compatible con el plugin 4.22). |
+| `/v3/` | Version 3.0.0 (2026-10-23, ajuste global de Moodle): misma estructura que v2 con la apariencia del sistema de diseno INCCA (tokens `--ic-*`, Outfit/Jost y Font Awesome locales, sin terceros; `assets/css/tema-incca.css` sobre `styles.css`) y el tipo de recurso `multimedia` de la plantilla nueva (videos y lecturas complementarias en un recurso, dos columnas). Requiere el plugin 4.25 para recibir `multimedia`. Usar con el visor de recurso `/v4/`. |
 | raiz `/` | Igual a v1, solo por compatibilidad. No apuntar Moodle aqui. |
 
 ## Reglas

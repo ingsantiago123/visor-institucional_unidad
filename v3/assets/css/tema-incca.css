@@ -1,0 +1,445 @@
+/* ==========================================================================
+   U.INCCA · Visor de unidad v3 — capa visual del sistema de diseno INCCA.
+
+   La ESTRUCTURA es la de v2 (styles.css: mazo horizontal, riel, flechas,
+   modales, clases y JS iguales). Este archivo, cargado despues, reformula
+   SOLO la apariencia con los tokens del sistema (incca-tokens.css, generado
+   por incca-design-system; no se copian valores a mano):
+
+   - azul noche + cian, oro como UNICO acento calido (fuera bronce, naranja,
+     morado y magenta);
+   - titulos Outfit (Scandia) y texto Jost (Futura), servidos desde aqui;
+   - botones pildora con degradado, una sola accion luminosa por vista;
+   - superficies redondeadas con borde cian y linea de acento degradada;
+   - cada diapositiva declara su tema (data-ic-theme, lo pone main.js) y
+     los colores semanticos (--ic-bg, --ic-text, --ic-accent...) cambian solos;
+   - movimiento suave solo con transform/opacity y respeto por
+     prefers-reduced-motion.
+   ========================================================================== */
+
+@font-face {
+  font-family: "Jost";
+  src: url("../fonts/jost-latin.woff2") format("woff2");
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Outfit";
+  src: url("../fonts/outfit-latin.woff2") format("woff2");
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- 1. Variables de v2 apuntando a los tokens (todo styles.css se alinea) --- */
+:root {
+  --oxford-blue: var(--ic-brand-night);
+  --royal-blue: var(--ic-brand-royal);
+  --dodger-blue: var(--ic-brand-blue);
+  --light-cyan: var(--ic-brand-cyan);
+  --old-gold: var(--ic-brand-gold);
+  --bronze: var(--ic-brand-gold);
+  --platinum: var(--ic-brand-mist);
+  --white: var(--ic-brand-white);
+
+  --gradient-institutional: var(--ic-gradient-royal);
+  --gradient-hero: var(--ic-gradient-panel);
+  --gradient-gold: var(--ic-gradient-gold-text);
+
+  --text-body: var(--ic-text-on-light);
+  --text-muted: var(--ic-text-on-light-muted);
+
+  --font-base: var(--ic-font-text);
+  --font-display: var(--ic-font-title);
+
+  --radius-sm: var(--ic-radius-sm);
+  --radius-md: var(--ic-radius-md);
+  --radius-lg: var(--ic-radius-lg);
+  --shadow-soft: var(--ic-shadow-card);
+  --shadow-strong: var(--ic-shadow-panel);
+  --ease-out: var(--ic-motion-ease-soft);
+}
+
+html, body { background: var(--ic-brand-night); }
+body {
+  font-family: var(--ic-font-text);
+  font-size: var(--ic-type-body-size);
+  line-height: var(--ic-type-body-lh);
+  color: var(--ic-text);
+}
+:focus-visible { outline: var(--ic-border-focus) solid var(--ic-focus); outline-offset: 2px; }
+::-webkit-scrollbar-thumb { background-image: var(--ic-gradient-accent); }
+.scroll-progress { background: var(--ic-gradient-accent); }
+
+/* --- 2. Temas de diapositiva: fondos del sistema, no degradados propios --- */
+.unit-section { color: var(--ic-text); }
+.unit-section[data-tema="dark"] {
+  background:
+    radial-gradient(1100px 520px at 88% -10%, rgba(101,203,227,.16), transparent 60%),
+    radial-gradient(800px 480px at -10% 110%, rgba(43,139,250,.14), transparent 60%),
+    var(--ic-brand-night);
+}
+.unit-section[data-tema="warm"] {
+  background:
+    radial-gradient(900px 480px at 100% 0%, rgba(203,181,78,.14), transparent 60%),
+    var(--ic-gradient-panel);
+}
+.unit-section[data-tema="light"],
+.unit-section[data-tema="accent"] {
+  background:
+    radial-gradient(900px 460px at 100% 0%, rgba(101,203,227,.18), transparent 62%),
+    var(--ic-bg);
+}
+.unit-section[data-tema="paper"] { background: var(--ic-gradient-paper); }
+
+.unit-section .unit-watermark {
+  font-family: var(--ic-font-title);
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--ic-border);
+  opacity: .9;
+}
+
+.unit-section .unit-eyebrow-text {
+  font-family: var(--ic-font-title);
+  font-size: var(--ic-type-eyebrow-size);
+  letter-spacing: var(--ic-type-eyebrow-ls);
+  font-weight: var(--ic-type-eyebrow-weight);
+  color: var(--ic-accent);
+}
+.unit-section[data-tema="warm"] .unit-eyebrow-text,
+.unit-section[data-tema="accent"] .unit-eyebrow-text { color: var(--ic-warm); }
+
+.unit-section .unit-title {
+  font-family: var(--ic-font-title);
+  font-size: var(--ic-type-h1-size);
+  line-height: var(--ic-type-h1-lh);
+  letter-spacing: var(--ic-type-h1-ls);
+  font-weight: var(--ic-type-h1-weight);
+  color: var(--ic-text);
+  padding-bottom: 14px;
+  position: relative;
+}
+/* Linea de acento degradada: la firma de cada titulo. */
+.unit-section .unit-title::after {
+  content: "";
+  position: absolute; left: 0; bottom: 0;
+  width: min(120px, 30%); height: 3px; border-radius: var(--ic-radius-pill);
+  background: var(--ic-accent-line);
+}
+.unit-section .unit-body p,
+.unit-section[data-tema] .unit-body p { color: var(--ic-text-soft); max-width: var(--ic-layout-reading-max); }
+
+/* Insignia del tipo: superficie con borde cian, icono en el acento (sin colores sueltos). */
+.unit-badge,
+.unit-badge[class*="unit-badge--"] {
+  width: 44px; height: 44px;
+  border-radius: var(--ic-radius-sm);
+  background: var(--ic-surface-1);
+  border: 1px solid var(--ic-border);
+  color: var(--ic-accent);
+  box-shadow: none;
+}
+.unit-badge--actividades, .unit-badge--texto { color: var(--ic-warm); }
+
+/* --- 3. Hero --- */
+.unit-slide--hero {
+  background:
+    radial-gradient(1000px 560px at 85% -5%, rgba(101,203,227,.22), transparent 60%),
+    radial-gradient(760px 520px at -8% 105%, rgba(43,139,250,.18), transparent 62%),
+    var(--ic-brand-night);
+}
+.hero-dots { opacity: .35; }
+.hero-blob { opacity: .32; }
+.hero-blob--gold, .hero-blob--gold2 { background: radial-gradient(circle, rgba(203,181,78,.6), transparent 68%); }
+.hero-blob--cyan { background: radial-gradient(circle, rgba(101,203,227,.7), transparent 68%); }
+.hero-eyebrow {
+  font-family: var(--ic-font-title);
+  color: var(--ic-brand-gold);
+  letter-spacing: var(--ic-type-eyebrow-ls);
+  text-shadow: none;
+}
+.hero-eyebrow::before { background: var(--ic-gradient-accent); width: 32px; height: 3px; border-radius: var(--ic-radius-pill); }
+.hero-title {
+  font-family: var(--ic-font-title);
+  font-size: var(--ic-type-display-size);
+  line-height: var(--ic-type-display-lh);
+  letter-spacing: var(--ic-type-display-ls);
+  font-weight: var(--ic-type-display-weight);
+  text-shadow: none;
+}
+.hero-title-word {
+  background: var(--ic-gradient-title-text);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+}
+.hero-subtitle { font-family: var(--ic-font-title); color: var(--ic-brand-cyan); text-shadow: none; }
+.hero-desc { color: var(--ic-text-soft); font-size: var(--ic-type-lead-size); line-height: var(--ic-type-lead-lh); }
+.hero-back {
+  border-radius: var(--ic-radius-pill);
+  background: var(--ic-surface-1);
+  border: 1px solid var(--ic-glass-border);
+  font-family: var(--ic-font-text);
+  min-height: var(--ic-size-touch-min);
+  padding: 8px 18px;
+}
+.hero-back:hover { background: var(--ic-surface-2); border-color: var(--ic-brand-cyan); }
+
+/* CTA de actividades: vidrio con borde oro (el acento calido unico) y pildora luminosa. */
+.hero-cta-act {
+  border-radius: var(--ic-radius-lg);
+  border-color: rgba(203,181,78,.5);
+  background: var(--ic-glass);
+  box-shadow: var(--ic-shadow-float);
+}
+.hero-cta-label { font-family: var(--ic-font-title); }
+.hero-cta-pill {
+  border-radius: var(--ic-radius-pill);
+  background: var(--ic-gradient-light);
+  color: var(--ic-text-on-button-dark);
+  box-shadow: var(--ic-shadow-button);
+}
+.hero-cta-badge { background: var(--ic-brand-gold); color: var(--ic-brand-night); }
+
+/* Franja de estadisticas como fichas del sistema. */
+.unit-stats {
+  border-radius: var(--ic-radius-lg);
+  background: var(--ic-gradient-panel);
+  border: 1px solid var(--ic-border);
+  box-shadow: var(--ic-shadow-panel);
+}
+.unit-stat-icon {
+  border-radius: var(--ic-radius-sm);
+  background: var(--ic-surface-1);
+  border: 1px solid var(--ic-border);
+  color: var(--ic-brand-cyan);
+}
+.unit-stat-count, .unit-stat-value { font-family: var(--ic-font-title); color: var(--ic-brand-ice); }
+.unit-stat-label, .unit-stat-eyebrow { color: var(--ic-text-on-dark-muted); }
+.hero-scrolltip { color: var(--ic-text-on-dark-muted); font-family: var(--ic-font-text); }
+
+/* --- 4. Navegacion: riel y flechas --- */
+.unit-rail {
+  border-radius: var(--ic-radius-pill);
+  background: var(--ic-surface-solid);
+  border: 1px solid var(--ic-glass-border);
+  box-shadow: var(--ic-shadow-float);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+}
+.unit-rail-current-icon { border-radius: var(--ic-radius-round); background: var(--ic-surface-2); border-color: var(--ic-border); color: var(--ic-brand-cyan); }
+.unit-rail-current-title { font-family: var(--ic-font-title); }
+.unit-rail-item { border-radius: var(--ic-radius-pill); }
+.unit-rail-item.is-active { background: var(--ic-surface-2); border-color: var(--ic-brand-gold); }
+.unit-rail-item.is-active .unit-rail-dot { box-shadow: 0 0 0 3px rgba(203,181,78,.2); color: var(--ic-brand-gold); }
+.unit-rail-label { font-family: var(--ic-font-text); }
+
+.deck-arrow {
+  border-radius: var(--ic-radius-pill);
+  background: var(--ic-surface-solid);
+  border: 1px solid var(--ic-glass-border);
+  box-shadow: var(--ic-shadow-float);
+  font-family: var(--ic-font-title);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+}
+.deck-arrow:hover, .deck-arrow:focus-visible { background: var(--ic-brand-panel-a); border-color: var(--ic-brand-cyan); }
+/* "Siguiente" es la accion luminosa de la vista. */
+.deck-arrow--next { background: var(--ic-gradient-light); color: var(--ic-text-on-button-dark); box-shadow: var(--ic-shadow-button); }
+.deck-arrow--next:hover, .deck-arrow--next:focus-visible { background: var(--ic-gradient-tide); color: var(--ic-text-on-button-dark); }
+
+/* --- 5. Botones: pildora; la solida es la accion principal --- */
+.unit-btn-solid, .unit-btn-outline, .unit-btn-flat {
+  border-radius: var(--ic-radius-pill);
+  min-height: var(--ic-size-touch-min);
+  font-family: var(--ic-font-text);
+  font-weight: var(--ic-type-button-weight);
+  letter-spacing: var(--ic-type-button-ls);
+}
+.unit-btn-solid { background: var(--ic-button-bg); color: var(--ic-on-button); box-shadow: var(--ic-shadow-button); border: 0; }
+.unit-btn-outline { background: transparent; color: var(--ic-accent); border: 1px solid var(--ic-border-strong, var(--ic-accent)); }
+.unit-btn-flat { background: var(--ic-surface-1); color: var(--ic-text); border: 1px solid var(--ic-border); }
+.unit-btn-solid:hover, .unit-btn-outline:hover, .unit-btn-flat:hover { box-shadow: var(--ic-shadow-card); }
+
+/* --- 6. Contenido por tipo --- */
+/* Lecciones (texto) */
+.unit-lessons-line { background: var(--ic-gradient-accent-light); opacity: .5; }
+.unit-lesson-num {
+  font-family: var(--ic-font-title);
+  border-radius: var(--ic-radius-round);
+  background: var(--ic-surface-solid);
+  border: 1px solid var(--ic-border);
+  color: var(--ic-accent);
+}
+.unit-lesson-card {
+  border-radius: var(--ic-radius-md);
+  background: var(--ic-surface-2);
+  border: 1px solid var(--ic-border);
+  box-shadow: none;
+}
+.unit-lesson-toggle { font-family: var(--ic-font-title); color: var(--ic-text); min-height: var(--ic-size-touch-min); }
+
+/* Videos */
+.unit-video { border-radius: var(--ic-radius-md); }
+.unit-video-thumb {
+  border-radius: var(--ic-radius-md);
+  border: 1px solid var(--ic-border);
+  box-shadow: var(--ic-shadow-card);
+}
+.unit-video-play {
+  border-radius: var(--ic-radius-round);
+  background: var(--ic-glass);
+  border: 1px solid rgba(255,255,255,.4);
+  color: var(--ic-brand-white);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.unit-video:hover .unit-video-play, .unit-video:focus-visible .unit-video-play { background: var(--ic-gradient-light); color: var(--ic-text-on-button-dark); }
+.unit-video-caption { font-family: var(--ic-font-text); color: var(--ic-text-soft); }
+.unit-video-badge { border-radius: var(--ic-radius-pill); background: var(--ic-brand-gold); color: var(--ic-brand-night); font-family: var(--ic-font-title); }
+
+/* Documento */
+.unit-doc-title a { color: var(--ic-link); font-family: var(--ic-font-title); }
+.unit-doc-frame {
+  border-radius: var(--ic-radius-lg);
+  border: 1px solid var(--ic-border);
+  box-shadow: var(--ic-shadow-panel);
+  background: var(--ic-surface-solid);
+  overflow: hidden;
+}
+.unit-doc-frame-empty { color: var(--ic-text-muted); }
+
+/* Enlaces (lista) */
+.unit-link-item a {
+  border-radius: var(--ic-radius-md);
+  background: var(--ic-surface-1);
+  border: 1px solid var(--ic-border);
+  color: var(--ic-text);
+  min-height: var(--ic-size-touch-min);
+}
+.unit-link-item a:hover, .unit-link-item a:focus-visible { border-color: var(--ic-accent); background: var(--ic-surface-2); }
+.unit-link-index { font-family: var(--ic-font-title); color: var(--ic-warm); }
+.unit-link-title { font-family: var(--ic-font-text); color: var(--ic-text); }
+.unit-link-source { color: var(--ic-text-muted); }
+.unit-link-arrow { color: var(--ic-accent); }
+
+/* Lecturas */
+.unit-reading-card { border-radius: var(--ic-radius-lg); }
+.unit-reading-card-open {
+  border-radius: var(--ic-radius-lg);
+  background: var(--ic-surface-2);
+  border: 1px solid var(--ic-border);
+  box-shadow: var(--ic-shadow-card);
+}
+.unit-reading-card-cover { background: var(--ic-gradient-panel); border: 1px solid var(--ic-border); }
+.unit-reading-card-pdf-badge { background: var(--ic-brand-gold); color: var(--ic-brand-night); }
+.unit-reading-card-title { font-family: var(--ic-font-title); color: var(--ic-text); }
+.unit-reading-card-cta { color: var(--ic-accent); font-family: var(--ic-font-text); }
+.unit-reading-card-audio, .unit-reading-audio {
+  border-radius: var(--ic-radius-pill);
+  background: var(--ic-surface-1);
+  border: 1px solid var(--ic-border);
+  color: var(--ic-accent);
+  min-height: var(--ic-size-touch-min);
+}
+.unit-reading-item {
+  border-radius: var(--ic-radius-md);
+  background: var(--ic-surface-1);
+  border: 1px solid var(--ic-border);
+}
+.unit-reading-icon { color: var(--ic-warm); }
+.unit-reading-title { color: var(--ic-text); }
+
+/* Actividades: colores de categoria del sistema (no morado/naranja/rojo propios). */
+.unit-activity[data-type="quiz"]    { --activity-color: var(--ic-category-c1); --activity-gradient: linear-gradient(90deg, var(--ic-category-c1), var(--ic-brand-blue)); }
+.unit-activity[data-type="tarea"]   { --activity-color: var(--ic-category-c2); --activity-gradient: linear-gradient(90deg, var(--ic-category-c2), var(--ic-brand-blue)); }
+.unit-activity[data-type="foro"]    { --activity-color: var(--ic-category-c3); --activity-gradient: linear-gradient(90deg, var(--ic-category-c3), var(--ic-brand-blue)); }
+.unit-activity[data-type="taller"]  { --activity-color: var(--ic-category-c4); --activity-gradient: linear-gradient(90deg, var(--ic-category-c4), var(--ic-brand-blue)); }
+.unit-activity[data-type="entrega"] { --activity-color: var(--ic-category-c5); --activity-gradient: var(--ic-gradient-gold-text); }
+.unit-activity[data-type="examen"]  { --activity-color: var(--ic-category-c6); --activity-gradient: linear-gradient(90deg, var(--ic-category-c6), var(--ic-brand-gold)); }
+.unit-activity-card {
+  border-radius: var(--ic-radius-md);
+  background: var(--ic-surface-2);
+  border: 1px solid var(--ic-border);
+  box-shadow: none;
+}
+.unit-activity-index { font-family: var(--ic-font-title); color: var(--ic-text-muted); }
+.unit-activity-nombre { font-family: var(--ic-font-title); color: var(--ic-text); }
+.unit-activity-type { font-family: var(--ic-font-text); border-radius: var(--ic-radius-pill); }
+.unit-activity-go {
+  border-radius: var(--ic-radius-round);
+  background: var(--ic-button-bg);
+  color: var(--ic-on-button);
+  min-width: var(--ic-size-touch-min); min-height: var(--ic-size-touch-min);
+}
+.unit-activities-line { background: var(--ic-gradient-accent-light); opacity: .4; }
+
+/* Multimedia (nuevo en v3): dos columnas de la plantilla nueva, 3/7 como en Moodle. */
+.unit-multimedia {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 7fr);
+  gap: clamp(20px, 3vw, 40px);
+  align-items: start;
+}
+.unit-multimedia--una { grid-template-columns: minmax(0, 1fr); }
+.unit-multimedia-col {
+  min-width: 0;
+  padding: clamp(16px, 2vw, 24px);
+  border-radius: var(--ic-radius-lg);
+  background: var(--ic-surface-1);
+  border: 1px solid var(--ic-border);
+}
+.unit-multimedia-sub {
+  display: flex; align-items: center; gap: 10px;
+  margin: 0 0 16px;
+  font-family: var(--ic-font-title);
+  font-size: var(--ic-type-h4-size);
+  color: var(--ic-text);
+}
+.unit-multimedia-sub i { color: var(--ic-accent); }
+.unit-multimedia-count {
+  margin-left: auto;
+  min-width: 28px; padding: 2px 10px;
+  border-radius: var(--ic-radius-pill);
+  background: var(--ic-surface-2);
+  border: 1px solid var(--ic-border);
+  font-size: var(--ic-type-small-size);
+  color: var(--ic-brand-ice);
+  text-align: center;
+}
+.unit-multimedia-col--videos .unit-videogrid { grid-template-columns: minmax(0, 1fr) !important; max-width: none !important; }
+.unit-multimedia-col--lecturas .unit-links { max-height: min(60vh, 560px); overflow-y: auto; padding-right: 6px; }
+@media (max-width: 900px) {
+  .unit-multimedia { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* --- 7. Modales --- */
+.media-modal-overlay, .reading-modal-overlay { background: var(--ic-scrim); }
+.media-modal, .reading-modal {
+  border-radius: var(--ic-radius-xl);
+  background: var(--ic-brand-night);
+  border: 1px solid var(--ic-border);
+  box-shadow: var(--ic-shadow-modal);
+  color: var(--ic-text);
+}
+.media-modal-title, .reading-modal-title { font-family: var(--ic-font-title); color: var(--ic-text); }
+.media-modal-close, .reading-modal-close {
+  border-radius: var(--ic-radius-round);
+  background: var(--ic-surface-2);
+  color: var(--ic-text);
+  min-width: var(--ic-size-touch-min); min-height: var(--ic-size-touch-min);
+}
+.media-modal-go, .reading-modal-audio {
+  border-radius: var(--ic-radius-pill);
+  background: var(--ic-gradient-light);
+  color: var(--ic-text-on-button-dark);
+}
+.reading-modal-icon { color: var(--ic-brand-gold); }
+
+/* --- 8. Estados vacios y avisos --- */
+.unit-empty, .unit-empty-inline { color: var(--ic-text-muted); font-family: var(--ic-font-text); }
+.embed-blocked { border-radius: var(--ic-radius-lg); border: 1px solid var(--ic-border); background: var(--ic-surface-solid); color: var(--ic-text); }
+.adblock-banner { border-radius: var(--ic-radius-md); background: var(--ic-brand-panel-b); border: 1px solid var(--ic-border); color: var(--ic-text-on-dark); }
+
+/* --- 9. Movimiento reducido --- */
+@media (prefers-reduced-motion: reduce) {
+  .hero-blob, .hero-title-word, .hero-cta-act { animation: none !important; }
+  .unit-video-thumb, .unit-reading-card-open, .unit-link-item a { transition: none !important; }
+}
