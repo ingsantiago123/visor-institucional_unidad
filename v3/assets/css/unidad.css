@@ -1,0 +1,402 @@
+/* ==========================================================================
+   U.INCCA · Visor de unidad v3 — diapositivas de la unidad
+   --------------------------------------------------------------------------
+   visor.css es la base compartida con el visor de curso (recurso v4): tokens,
+   escenario (foto + velo + red), mazo, barra flotante, entradas, panel, play
+   de vidrio, botones pildora, ruta de actividades y dialogos. Aqui solo van
+   los arquetipos propios de una unidad, armados con esas mismas piezas:
+
+     inicio de la unidad (emblema + ficha) · lectura con lecciones ·
+     videos / video destacado · documento · referencias · lecturas de apoyo ·
+     multimedia (videos y lecturas en un recurso) · actividades.
+
+   Mismas reglas del sistema de diseno INCCA: paleta cerrada (oro como unico
+   acento calido), Outfit/Jost, subrayado degradado bajo cada titulo, solo se
+   anima transform/opacity, lo que no se ve duerme, nada se corta.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Cabecera comun de cada recurso
+   -------------------------------------------------------------------------- */
+.unidad-cabeza {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: clamp(18px, 3.2vh, 30px);
+}
+.unidad-paso {
+  margin-left: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--borde-cian);
+  color: var(--claro-3);
+  font: 600 10.5px/1.3 var(--fuente-texto);
+  letter-spacing: .14em;
+}
+.slide[data-tono="claro"] .unidad-paso { border-color: rgba(38, 52, 90, .18); color: var(--tinta-2); }
+.unidad-cabeza .bajada { margin-top: 4px; }
+.unidad-cabeza .titulo { max-width: 24ch; }
+
+/* Enlaces con aspecto de pildora o "leer mas" (visor.css los define para <button>). */
+a.pildora, a.enlace-mas { text-decoration: none; }
+a.enlace-mas { margin-top: 0; }
+
+/* --------------------------------------------------------------------------
+   2. Inicio de la unidad
+   -------------------------------------------------------------------------- */
+.unidad-inicio-grid { grid-template-columns: minmax(0, 1fr) minmax(280px, 400px); }
+.unidad-volver {
+  display: inline-flex; align-items: center; gap: 8px;
+  min-height: 40px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .22);
+  background: rgba(255, 255, 255, .06);
+  color: var(--claro-2);
+  font: 600 13px/1 var(--fuente-texto);
+  text-decoration: none;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background .25s, border-color .25s, transform .25s var(--ease);
+}
+.unidad-volver:hover { background: rgba(101, 203, 227, .12); border-color: rgba(101, 203, 227, .5); transform: translateX(-3px); color: #fff; }
+.unidad-subtitulo {
+  max-width: 46ch;
+  color: var(--claro-1);
+  font: 600 clamp(17px, 1.5vw, 22px)/1.4 var(--fuente-titulo);
+  letter-spacing: -.01em;
+  text-wrap: balance;
+}
+
+.unidad-inicio-lado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(16px, 3vh, 26px);
+  min-width: 0;
+}
+.unidad-emblema { width: clamp(170px, 30vh, 290px); display: grid; place-items: center; }
+.unidad-emblema .emblema-unidad { width: 100%; height: auto; max-width: none; }
+.unidad-emblema .emblema-num { font-size: clamp(52px, 9vh, 96px); }
+.slide.is-active .unidad-emblema .emblema-anillo--2 { animation: girar 32s linear infinite; }
+.slide.is-active .unidad-emblema .emblema-disco { animation: rv-escala .8s var(--ease) .35s backwards; }
+
+/* Ficha compacta: icono + cifra + texto en una fila; la duracion ocupa el ancho. */
+.unidad-ficha { width: 100%; max-width: 400px; justify-self: center; gap: 12px; }
+.unidad-ficha .ficha {
+  min-height: 0;
+  flex-direction: row; align-items: center; justify-content: flex-start;
+  gap: 12px;
+  padding: 13px 15px;
+  border-radius: 16px;
+}
+.unidad-ficha .ficha-num { font-size: 24px; }
+.unidad-ficha .ficha-texto { font-size: 12px; }
+.unidad-ficha-duracion { grid-column: 1 / -1; flex-wrap: wrap; }
+.unidad-ficha-duracion .ficha-valor { margin-left: auto; color: #fff; font: 700 15px/1.2 var(--fuente-titulo); }
+
+/* --------------------------------------------------------------------------
+   3. Lectura (texto + lecciones): escena clara, lecciones en panel azul
+   -------------------------------------------------------------------------- */
+.unidad-texto-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr);
+  gap: clamp(28px, 4.5vw, 72px);
+  align-items: start;
+}
+.unidad-texto-grid--solo { grid-template-columns: minmax(0, 860px); }
+.unidad-texto-lado { min-width: 0; }
+.unidad-parrafos {
+  max-height: min(52vh, 520px);
+  padding-right: 14px;
+  color: var(--tinta-2);
+  font-size: clamp(15px, .35vw + 13.5px, 17px);
+  line-height: 1.78;
+}
+
+.unidad-lecciones { padding: clamp(20px, 2.4vw, 28px); }
+.unidad-ruta {
+  position: relative;
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.unidad-ruta::before {
+  content: "";
+  position: absolute; left: 21px; top: 16px; bottom: 16px;
+  width: 2px; border-radius: 2px;
+  background: linear-gradient(180deg, var(--oro), var(--cian) 50%, rgba(101, 203, 227, 0));
+  transform-origin: top center;
+}
+.slide.is-active .unidad-ruta::before { animation: rv-linea .9s var(--ease) .3s backwards; }
+.slide.is-active .unidad-leccion { animation: rv-subir .55s var(--ease) calc(.36s + min(var(--i, 0), 9) * .06s) backwards; }
+.unidad-leccion summary {
+  list-style: none;
+  display: flex; align-items: center; gap: 14px;
+  min-height: 46px;
+  padding: 6px 10px 6px 0;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background .25s;
+}
+.unidad-leccion summary::-webkit-details-marker { display: none; }
+.unidad-leccion summary:hover { background: rgba(101, 203, 227, .06); }
+.unidad-leccion .sin-detalle summary { cursor: default; }
+.unidad-leccion .sin-detalle summary:hover { background: none; }
+.unidad-leccion-nodo {
+  position: relative; z-index: 1;
+  flex: 0 0 auto;
+  width: 44px; height: 44px;
+  display: grid; place-items: center;
+  border-radius: 13px;
+  background: rgba(4, 11, 60, .92);
+  box-shadow: inset 0 0 0 1px var(--cian), 0 8px 18px rgba(2, 6, 30, .3);
+  color: var(--cian);
+  font: 800 14px/1 var(--fuente-titulo);
+  transition: transform .35s var(--ease-rebote), background-color .3s, color .3s;
+}
+.unidad-leccion details[open] .unidad-leccion-nodo,
+.unidad-leccion summary:hover .unidad-leccion-nodo { background: var(--cian); color: var(--noche); transform: scale(1.04); }
+.unidad-leccion-titulo { flex: 1 1 auto; min-width: 0; color: #F1F4F7; font: 600 15px/1.4 var(--fuente-titulo); overflow-wrap: anywhere; }
+.unidad-leccion-abrir { color: var(--cian); font-size: 12px; transition: transform .3s var(--ease); }
+.unidad-leccion details[open] .unidad-leccion-abrir { transform: rotate(180deg); }
+.unidad-leccion-texto { margin: 4px 0 10px 58px; color: var(--panel-texto); font-size: 14.5px; line-height: 1.68; opacity: .92; }
+
+/* --------------------------------------------------------------------------
+   4. Videos (grilla) y video destacado: la tarjeta y el play del sistema
+   -------------------------------------------------------------------------- */
+.unidad-videos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 24px 20px;
+  max-width: 1280px;
+}
+.unidad-video { margin: 0; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.slide.is-active .unidad-videos .unidad-video { animation: rv-subir .6s var(--ease) calc(.26s + min(var(--i, 0), 9) * .07s) backwards; }
+.unidad-video .video-tarjeta { border-radius: 18px; color: #fff; }
+.unidad-video .video-tarjeta .boton-play { width: 72px; height: 72px; }
+.unidad-video .video-tarjeta[disabled] { opacity: .55; cursor: not-allowed; }
+.unidad-video .video-tarjeta[disabled]:hover { transform: none; }
+.unidad-video-titulo { color: var(--claro-1); font: 600 14.5px/1.45 var(--fuente-titulo); overflow-wrap: anywhere; }
+.unidad-video--grande .video-tarjeta { border-radius: 24px; }
+.unidad-video--grande .video-tarjeta .boton-play { width: 108px; height: 108px; }
+
+.unidad-destacado {
+  display: grid;
+  grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+  gap: clamp(28px, 4.5vw, 72px);
+  align-items: center;
+}
+.unidad-nota { display: flex; align-items: center; gap: 10px; margin-top: 4px; color: var(--claro-3); font-size: 13.5px; line-height: 1.5; }
+.unidad-nota i { color: var(--cian); }
+
+/* --------------------------------------------------------------------------
+   5. Documento y recurso personalizado
+   -------------------------------------------------------------------------- */
+.unidad-documento { max-width: 1240px; display: flex; flex-direction: column; }
+.unidad-documento .medio-marco { flex: none; height: clamp(240px, calc(100vh - 360px), 700px); }
+.unidad-acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 20px; }
+
+/* --------------------------------------------------------------------------
+   6. Referencias (enlaces) y lecturas complementarias: lista en panel azul
+   -------------------------------------------------------------------------- */
+.unidad-columna-unica { max-width: 1000px; }
+.unidad-enlaces-panel { padding: 10px; }
+.unidad-enlaces-lectura { max-height: min(56vh, 580px); padding: 6px 8px 6px 6px; }
+.unidad-enlaces { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.unidad-enlace { display: flex; align-items: stretch; gap: 8px; min-width: 0; }
+.slide.is-active .unidad-enlace { animation: rv-subir .5s var(--ease) calc(.3s + min(var(--i, 0), 10) * .05s) backwards; }
+.unidad-enlace > a, .unidad-enlace-abrir {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex; align-items: center; gap: 16px;
+  min-height: 56px;
+  padding: 12px 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(101, 203, 227, .12);
+  background: rgba(255, 255, 255, .035);
+  color: var(--panel-texto);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  transition: transform .3s var(--ease), background-color .3s, border-color .3s;
+}
+.unidad-enlace > a:hover, .unidad-enlace-abrir:hover { transform: translateX(4px); background: rgba(101, 203, 227, .08); border-color: rgba(101, 203, 227, .4); }
+.unidad-enlace-num { flex: 0 0 auto; min-width: 24px; color: var(--oro); font: 800 14px/1 var(--fuente-titulo); }
+.unidad-enlace-texto { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.unidad-enlace-titulo { color: #F1F4F7; font: 600 15px/1.45 var(--fuente-texto); overflow-wrap: anywhere; }
+.unidad-enlace-fuente {
+  width: fit-content;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(203, 181, 78, .45);
+  color: var(--oro-claro);
+  font: 600 11px/1.4 var(--fuente-texto);
+  letter-spacing: .06em;
+}
+.unidad-enlace-ir { flex: 0 0 auto; color: var(--cian); font-size: 13px; transition: transform .25s var(--ease); }
+.unidad-enlace > a:hover .unidad-enlace-ir, .unidad-enlace-abrir:hover .unidad-enlace-ir { transform: translate(2px, -2px); }
+.unidad-audio--icono {
+  flex: 0 0 52px;
+  display: grid; place-items: center;
+  border-radius: 14px;
+  border: 1px solid rgba(203, 181, 78, .35);
+  background: rgba(203, 181, 78, .1);
+  color: var(--oro);
+  text-decoration: none;
+  transition: background .25s, transform .25s var(--ease);
+}
+.unidad-audio--icono:hover { background: rgba(203, 181, 78, .2); transform: translateY(-2px); }
+
+/* --------------------------------------------------------------------------
+   7. Lecturas de apoyo: tarjetas de panel azul sobre la escena clara
+   -------------------------------------------------------------------------- */
+.unidad-lecturas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
+  gap: 20px;
+  max-width: 1200px;
+}
+.unidad-lectura {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 12px;
+  min-height: 230px;
+  padding: 24px 24px 20px;
+  transition: transform .35s var(--ease), box-shadow .35s, border-color .35s;
+}
+.unidad-lectura:hover { transform: translateY(-6px); border-color: rgba(101, 203, 227, .45); box-shadow: 0 26px 52px rgba(4, 11, 60, .3), 0 0 26px rgba(0, 255, 231, .08); }
+.slide.is-active .unidad-lectura { animation: rv-subir .65s var(--ease) calc(.26s + min(var(--i, 0), 9) * .08s) backwards; }
+.unidad-lectura-icono {
+  position: relative;
+  width: 56px; height: 56px;
+  display: grid; place-items: center;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--real), var(--azul));
+  color: #fff;
+  font-size: 21px;
+  box-shadow: 0 12px 26px rgba(11, 52, 157, .35);
+}
+.unidad-lectura-icono span {
+  position: absolute; top: -8px; right: -10px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--oro), var(--oro-claro));
+  color: var(--noche);
+  font: 800 9.5px/1.4 var(--fuente-texto);
+  letter-spacing: .08em;
+}
+.unidad-lectura-titulo { flex: 1 1 auto; color: #F1F4F7; font: 700 17px/1.38 var(--fuente-titulo); overflow-wrap: anywhere; text-wrap: balance; }
+.unidad-lectura-acciones { width: 100%; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; margin-top: auto; }
+.unidad-lectura .enlace-mas { min-height: 44px; }
+
+/* --------------------------------------------------------------------------
+   8. Multimedia: videos (angosta) y lecturas (ancha), como en la plantilla
+   -------------------------------------------------------------------------- */
+.unidad-multimedia {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 7fr);
+  gap: 22px;
+  align-items: start;
+  max-width: 1320px;
+}
+.unidad-multimedia--una { grid-template-columns: minmax(0, 1fr); max-width: 1000px; }
+.unidad-columna { min-width: 0; display: flex; flex-direction: column; gap: 14px; padding: 22px 20px 18px; }
+.unidad-columna-titulo { display: flex; align-items: center; gap: 10px; color: #F1F4F7; font: 700 16px/1.2 var(--fuente-titulo); }
+.unidad-columna-titulo i { color: var(--aqua); }
+.unidad-cuenta {
+  margin-left: auto;
+  min-width: 30px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--borde-cian);
+  background: rgba(101, 203, 227, .1);
+  color: var(--cian-hielo);
+  font: 700 12px/1.2 var(--fuente-texto);
+  text-align: center;
+}
+.unidad-columna-lectura { max-height: min(52vh, 540px); padding-right: 8px; display: flex; flex-direction: column; gap: 16px; }
+.unidad-columna .unidad-video .video-tarjeta .boton-play { width: 60px; height: 60px; }
+.unidad-multimedia--una .unidad-columna-lectura { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
+
+/* --------------------------------------------------------------------------
+   9. Actividades (la ruta de visor.css)
+   -------------------------------------------------------------------------- */
+.unidad-actividades { max-width: 960px; display: flex; flex-direction: column; }
+
+/* --------------------------------------------------------------------------
+   10. Navegacion: nombres largos de recursos y fin del mazo
+   -------------------------------------------------------------------------- */
+.nav-item-texto { text-overflow: ellipsis; }
+.nav-item.is-active .nav-item-texto { max-width: 220px; }
+.deck-flecha.is-fin { opacity: 0; pointer-events: none; }
+
+/* --------------------------------------------------------------------------
+   11. Aviso de bloqueador de anuncios (sobre el marco que no cargo)
+   -------------------------------------------------------------------------- */
+.unidad-bloqueo {
+  position: absolute; inset: 0; z-index: 3;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+  padding: 28px;
+  text-align: center;
+  background: rgba(4, 11, 60, .95);
+  color: var(--claro-1);
+  overflow: auto;
+}
+.unidad-bloqueo-icono {
+  width: 58px; height: 58px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: rgba(203, 181, 78, .14);
+  border: 1px solid rgba(203, 181, 78, .45);
+  color: var(--oro);
+  font-size: 22px;
+}
+.unidad-bloqueo h4 { font: 700 clamp(16px, 1.6vw, 19px)/1.3 var(--fuente-titulo); text-wrap: balance; }
+.unidad-bloqueo p { max-width: 54ch; color: var(--claro-2); font-size: 14.5px; line-height: 1.6; }
+.unidad-bloqueo-acciones { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+
+/* --------------------------------------------------------------------------
+   12. Pantallas medianas, tableta y celular
+   -------------------------------------------------------------------------- */
+@media (max-width: 1100px) {
+  .unidad-texto-grid { grid-template-columns: minmax(0, 1fr) minmax(280px, .9fr); gap: 36px; }
+  .unidad-multimedia { grid-template-columns: minmax(0, 4fr) minmax(0, 6fr); }
+  .unidad-inicio-grid { grid-template-columns: minmax(0, 1fr) minmax(250px, 330px); }
+}
+@media (max-width: 900px) {
+  .unidad-texto-grid, .unidad-destacado, .unidad-multimedia { grid-template-columns: minmax(0, 1fr); }
+  .unidad-cabeza .titulo { max-width: none; }
+  /* La diapositiva entera se desplaza: las cajas internas ya no limitan el alto. */
+  .unidad-parrafos, .unidad-columna-lectura, .unidad-enlaces-lectura { max-height: none; overflow: visible; padding-right: 0; }
+  .unidad-documento .medio-marco { height: 60vh; }
+  .unidad-emblema { width: 170px; }
+  .unidad-inicio-lado { width: 100%; }
+  .unidad-ficha { max-width: 520px; width: 100%; }
+}
+@media (max-width: 600px) {
+  .unidad-enlace > a, .unidad-enlace-abrir { gap: 12px; padding: 12px 14px; }
+  .unidad-lectura { min-height: 0; padding: 20px; }
+  .unidad-leccion-texto { margin-left: 0; }
+  .unidad-paso { display: none; }
+}
+@media (max-height: 760px) and (min-width: 901px) {
+  .unidad-emblema { width: clamp(150px, 26vh, 220px); }
+  .unidad-ficha .ficha { padding: 10px 13px; }
+  .unidad-ficha .ficha-num { font-size: 21px; }
+  .unidad-documento .medio-marco { height: clamp(220px, calc(100vh - 320px), 600px); }
+}
+
+/* --------------------------------------------------------------------------
+   13. Equipos modestos y movimiento reducido
+   -------------------------------------------------------------------------- */
+.equipo-modesto .unidad-volver { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(4, 11, 60, .7); }
+@media (prefers-reduced-motion: reduce) {
+  .slide.is-active .unidad-leccion,
+  .slide.is-active .unidad-video,
+  .slide.is-active .unidad-enlace,
+  .slide.is-active .unidad-lectura,
+  .slide.is-active .unidad-ruta::before,
+  .slide.is-active .unidad-emblema .emblema-anillo--2,
+  .slide.is-active .unidad-emblema .emblema-disco { animation: none !important; }
+  .unidad-lectura, .unidad-enlace > a, .unidad-enlace-abrir, .unidad-leccion-nodo { transition: none; }
+}
