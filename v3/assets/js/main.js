@@ -1,5 +1,5 @@
 /*!
- * U.INCCA · Visor de unidad v3 (3.2.0) — JavaScript propio, sin dependencias.
+ * U.INCCA · Visor de unidad v3 (3.2.1) — JavaScript propio, sin dependencias.
  * ---------------------------------------------------------------------
  * Mismo contrato que v2 (todo llega como UN objeto JSON en window.name,
  * lo imprime local_visorincca en el atributo name del iframe):
@@ -33,7 +33,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "3.2.0";
+  const VERSION = "3.2.1";
   const $ = (sel, ctx) => (ctx || document).querySelector(sel);
   const $$ = (sel, ctx) => Array.from((ctx || document).querySelectorAll(sel));
   const reducido = () => !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);

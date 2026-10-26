@@ -718,15 +718,19 @@ a.enlace-mas { margin-top: 0; }
 @media (max-width: 600px) {
   .unidad-arriba { width: 100%; }
   .unidad-semanas { width: 100%; }
-  .semana-salto { flex: 1 1 0; }
-  .semana-salto-nombre { max-width: none; font-size: 13px; }
+  .semana-salto { flex: 1 1 0; gap: 7px; padding: 0 10px 0 4px; }
+  .semana-salto--next { padding: 0 4px 0 10px; }
+  .semana-salto-flecha { width: 30px; height: 30px; }
+  .semana-salto-nombre { max-width: none; font-size: 12.5px; }
+  .unidad-semanas-pos { padding: 0 9px; letter-spacing: .06em; }
   .salto-semana { left: 12px; right: 12px; max-width: none; bottom: calc(max(16px, env(safe-area-inset-bottom)) + 58px); }
 }
 @media (max-width: 359.98px) {
   .semana-salto-rotulo { display: none; }
-  .semana-salto { gap: 7px; padding-right: 10px; }
-  .semana-salto--next { padding: 0 6px 0 10px; }
-  .unidad-semanas-pos { padding: 0 8px; }
+  .semana-salto { gap: 5px; padding: 0 8px 0 3px; }
+  .semana-salto--next { padding: 0 3px 0 8px; }
+  .semana-salto-flecha { width: 28px; height: 28px; }
+  .unidad-semanas-pos { padding: 0 7px; }
 }
 
 .equipo-modesto .unidad-semanas,
