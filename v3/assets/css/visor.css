@@ -186,6 +186,9 @@ a { color: inherit; }
   overscroll-behavior: contain;
   scrollbar-width: thin;
   scrollbar-color: rgba(101, 203, 227, .35) transparent;
+  /* Estabilidad: el ancho no cambia cuando aparece la barra (sin esto, un contenido justo del alto de la
+     pantalla hacia aparecer y desaparecer la barra y todo se movia de lado a lado). */
+  scrollbar-gutter: stable;
 }
 .slide-cuerpo::-webkit-scrollbar { width: 7px; }
 .slide-cuerpo::-webkit-scrollbar-thumb { background: rgba(101, 203, 227, .3); border-radius: 999px; }
