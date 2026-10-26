@@ -518,3 +518,224 @@ a.enlace-mas { margin-top: 0; }
   .unidad-libro, .unidad-enlace > a, .unidad-enlace-abrir, .unidad-leccion-nodo { transition: none; }
   .unidad-libro:hover .unidad-libro-tapa, .unidad-libro-abrir:focus-visible .unidad-libro-tapa { transform: none; }
 }
+
+/* --------------------------------------------------------------------------
+   14. Salto entre unidades (3.2.0, datos.navegacion del plugin 4.28)
+       Dos piezas chicas, nunca una diapositiva:
+       - en el inicio, la capsula "Anterior · 03/06 · Siguiente" junto a
+         "Volver a las unidades";
+       - al llegar a la ultima diapositiva, la tarjeta flotante "Siguiente
+         unidad" (al lado de la barra en pantallas anchas, encima de ella en
+         las angostas). Solo se anima transform/opacity.
+   -------------------------------------------------------------------------- */
+.unidad-arriba { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; }
+
+.unidad-semanas {
+  display: inline-flex; align-items: stretch;
+  min-height: 46px; max-width: 100%;
+  padding: 3px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  background: rgba(4, 11, 60, .34);
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+}
+.semana-salto {
+  display: flex; align-items: center; gap: 10px;
+  min-width: 0;
+  padding: 0 16px 0 6px;
+  border-radius: 999px;
+  color: var(--claro-2);
+  text-decoration: none;
+  transition: background .25s var(--ease-suave), color .25s;
+}
+.semana-salto--next { flex-direction: row-reverse; padding: 0 6px 0 16px; text-align: right; }
+.semana-salto.is-vacio { display: none; }
+.semana-salto:hover { background: rgba(101, 203, 227, .12); color: #fff; }
+.semana-salto:focus-visible { outline: 2px solid var(--cian); outline-offset: 2px; }
+.semana-salto-flecha {
+  position: relative;
+  flex: 0 0 auto;
+  width: 32px; height: 32px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(101, 203, 227, .32);
+  color: var(--cian);
+  font-size: 11px;
+  transition: transform .3s var(--ease), background .25s, border-color .25s;
+}
+.semana-salto:hover .semana-salto-flecha { border-color: rgba(101, 203, 227, .6); background: rgba(101, 203, 227, .1); }
+.semana-salto--prev:hover .semana-salto-flecha { transform: translateX(-2px); }
+.semana-salto--next:hover .semana-salto-flecha { transform: translateX(2px); }
+.semana-salto-texto { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.semana-salto-rotulo {
+  color: var(--cian-hielo);
+  font: 600 9.5px/1 var(--fuente-texto);
+  letter-spacing: .2em; text-transform: uppercase;
+  opacity: .78;
+}
+.semana-salto-nombre {
+  max-width: 17ch;
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  font: 600 13.5px/1.15 var(--fuente-titulo);
+  letter-spacing: -.005em;
+}
+.unidad-semanas-pos {
+  position: relative;
+  display: flex; align-items: center; gap: 1px;
+  padding: 0 12px;
+  color: var(--claro-3);
+  font: 600 11px/1 var(--fuente-texto);
+  letter-spacing: .1em;
+}
+.unidad-semanas-pos::before, .unidad-semanas-pos::after {
+  content: ""; position: absolute; top: 10px; bottom: 10px; width: 1px;
+  background: rgba(255, 255, 255, .14);
+}
+.unidad-semanas-pos::before { left: 0; }
+.unidad-semanas-pos::after { right: 0; }
+.unidad-semanas-pos b { color: #fff; font-weight: 700; }
+.unidad-semanas-pos i { font-style: normal; opacity: .45; margin: 0 2px; }
+.unidad-semanas-pos--sola { padding: 0; }
+.unidad-semanas-pos--sola::after { display: none; }
+/* Sin "anterior" (primera unidad) o sin "siguiente" (ultima): no queda una raya colgando. */
+.semana-salto--prev.is-vacio + .unidad-semanas-pos::before { display: none; }
+.unidad-semanas-pos:has(+ .semana-salto--next.is-vacio)::after { display: none; }
+
+/* Tarjeta flotante "Siguiente unidad" */
+.salto-semana {
+  position: absolute; z-index: 44;
+  right: 24px; bottom: max(16px, env(safe-area-inset-bottom));
+  display: flex; align-items: center; gap: 12px;
+  min-height: 52px; max-width: min(320px, calc(100% - 32px));
+  padding: 6px 7px 6px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  background: rgba(4, 11, 60, .56);
+  box-shadow: 0 14px 36px rgba(2, 6, 30, .35);
+  backdrop-filter: blur(18px) saturate(170%);
+  -webkit-backdrop-filter: blur(18px) saturate(170%);
+  color: #fff;
+  text-decoration: none;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transform: translateY(14px) scale(.98);
+  transition: opacity .4s var(--ease), transform .55s var(--ease), visibility 0s linear .55s,
+              background .3s, border-color .3s;
+}
+.deck[data-fin] .salto-semana {
+  opacity: 1; visibility: visible; pointer-events: auto;
+  transform: none;
+  transition: opacity .5s var(--ease) .3s, transform .65s var(--ease) .3s, visibility 0s,
+              background .3s, border-color .3s;
+}
+.salto-semana:hover { background: rgba(4, 11, 60, .74); border-color: rgba(101, 203, 227, .5); }
+.salto-semana:focus-visible { outline: 2px solid var(--cian); outline-offset: 3px; }
+.salto-disco {
+  flex: 0 0 auto;
+  width: 40px; height: 40px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(203, 181, 78, .55);
+  background: radial-gradient(circle at 50% 35%, rgba(203, 181, 78, .2), rgba(4, 11, 60, .2) 70%);
+  color: var(--oro-claro);
+  font: 700 14px/1 var(--fuente-titulo);
+  letter-spacing: -.01em;
+}
+.salto-disco i { font-size: 14px; }
+.salto-semana-texto { display: flex; flex-direction: column; gap: 3px; min-width: 0; padding-right: 2px; }
+.salto-semana-rotulo {
+  color: var(--cian-hielo);
+  font: 600 9.5px/1 var(--fuente-texto);
+  letter-spacing: .2em; text-transform: uppercase;
+  opacity: .8;
+}
+.salto-semana-nombre, .salto-semana-titulo { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.salto-semana-nombre { font: 600 14.5px/1.15 var(--fuente-titulo); letter-spacing: -.005em; }
+.salto-semana-titulo { color: var(--claro-3); font: 500 11.5px/1.2 var(--fuente-texto); }
+.salto-semana-flecha {
+  position: relative;
+  flex: 0 0 auto;
+  width: 38px; height: 38px; margin-left: auto;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: var(--grad-luz);
+  color: #071224;
+  font-size: 14px;
+  transition: transform .35s var(--ease);
+}
+.salto-semana:hover .salto-semana-flecha { transform: translateX(3px); }
+/* Un latido suave del anillo al aparecer (dos veces), para que se note sin gritar. */
+.salto-semana-flecha::before {
+  content: ""; position: absolute; inset: -4px;
+  border-radius: 50%;
+  border: 1px solid rgba(101, 203, 227, .6);
+  opacity: 0;
+}
+.deck[data-fin] .salto-semana-flecha::before { animation: salto-latido 1.8s var(--ease-suave) 1s 2; }
+@keyframes salto-latido {
+  0% { opacity: .9; transform: scale(.9); }
+  100% { opacity: 0; transform: scale(1.45); }
+}
+
+/* Abriendo la otra unidad: giro en la flecha y el mazo se atenua. */
+.semana-salto.is-cargando .semana-salto-flecha i,
+.salto-semana.is-cargando .salto-semana-flecha i { opacity: 0; }
+.semana-salto.is-cargando .semana-salto-flecha::after,
+.salto-semana.is-cargando .salto-semana-flecha::after {
+  content: ""; position: absolute;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 2px solid currentColor; border-right-color: transparent;
+  animation: salto-giro .7s linear infinite;
+}
+@keyframes salto-giro { to { transform: rotate(360deg); } }
+.deck[data-saliendo] .slides, .deck[data-saliendo] .deck-nav, .deck[data-saliendo] .deck-flecha { opacity: .5; transition: opacity .35s var(--ease-suave); }
+
+/* Diapositiva clara */
+.deck[data-tema="claro"] .salto-semana {
+  background: rgba(255, 255, 255, .82);
+  border-color: rgba(38, 52, 90, .12);
+  box-shadow: 0 14px 36px rgba(38, 52, 90, .16);
+  color: var(--tinta);
+}
+.deck[data-tema="claro"] .salto-semana:hover { background: #fff; border-color: rgba(43, 139, 250, .45); }
+.deck[data-tema="claro"] .salto-semana-rotulo { color: var(--azul); opacity: 1; }
+.deck[data-tema="claro"] .salto-semana-titulo { color: var(--tinta-3); }
+.deck[data-tema="claro"] .salto-disco { color: var(--real); border-color: rgba(11, 52, 157, .3); background: rgba(43, 139, 250, .08); }
+.deck[data-tema="claro"] .salto-semana-flecha { background: linear-gradient(135deg, var(--real), var(--azul)); color: #fff; }
+
+/* Pantallas medianas: la barra puede ocupar el centro: la tarjeta sube encima
+   de ella y la ultima diapositiva reserva ese espacio (no tapa contenido). */
+@media (max-width: 1239.98px) {
+  .salto-semana { right: 16px; bottom: calc(max(16px, env(safe-area-inset-bottom)) + 62px); }
+  .deck[data-salto] .slides > .slide:last-child .slide-cuerpo {
+    padding-bottom: calc(clamp(16px, 3vh, 32px) + var(--chrome) + 66px);
+  }
+}
+@media (max-width: 900px) {
+  .unidad-arriba { justify-content: center; }
+}
+@media (max-width: 600px) {
+  .unidad-arriba { width: 100%; }
+  .unidad-semanas { width: 100%; }
+  .semana-salto { flex: 1 1 0; }
+  .semana-salto-nombre { max-width: none; font-size: 13px; }
+  .salto-semana { left: 12px; right: 12px; max-width: none; bottom: calc(max(16px, env(safe-area-inset-bottom)) + 58px); }
+}
+@media (max-width: 359.98px) {
+  .semana-salto-rotulo { display: none; }
+  .semana-salto { gap: 7px; padding-right: 10px; }
+  .semana-salto--next { padding: 0 6px 0 10px; }
+  .unidad-semanas-pos { padding: 0 8px; }
+}
+
+.equipo-modesto .unidad-semanas,
+.equipo-modesto .salto-semana { backdrop-filter: none; -webkit-backdrop-filter: none; }
+.equipo-modesto .unidad-semanas { background: rgba(4, 11, 60, .7); }
+.equipo-modesto .salto-semana { background: rgba(4, 11, 60, .9); }
+.equipo-modesto .deck[data-tema="claro"] .salto-semana { background: rgba(255, 255, 255, .96); }
+@media (prefers-reduced-motion: reduce) {
+  .salto-semana, .deck[data-fin] .salto-semana { transform: none; transition: opacity .2s, visibility 0s; }
+  .deck[data-fin] .salto-semana-flecha::before { animation: none; }
+  .semana-salto-flecha, .salto-semana-flecha { transition: none; }
+}

@@ -1,10 +1,11 @@
 /*!
- * U.INCCA · Visor de unidad v3 (3.1.1) — JavaScript propio, sin dependencias.
+ * U.INCCA · Visor de unidad v3 (3.2.0) — JavaScript propio, sin dependencias.
  * ---------------------------------------------------------------------
  * Mismo contrato que v2 (todo llega como UN objeto JSON en window.name,
  * lo imprime local_visorincca en el atributo name del iframe):
  *
  *   unidad, titulo, descripcion, duracion_estimada, volver_url, origen_padre,
+ *   navegacion{anterior,siguiente:{sectionid,unidad,titulo,url},posicion,total} (opcional, 3.2.0),
  *   fondos (opcional, igual que el visor de curso),
  *   recursos[{id, tipo, titulo, visible, orden, ...}] con tipo:
  *     texto{parrafos[], items[{titulo,descripcion}]}
@@ -26,11 +27,13 @@
  *
  * Puente con Moodle (protocolo 2, sin cambios frente a v2): "visor-listo"
  * (tipo "unidad"), "visor-error" y "volver-unidades" / "unidades-cerrado".
+ * 3.2.0: "ir-unidad" {sectionid} / "unidad-abriendo" (unidad anterior o siguiente,
+ * solo si el puente anuncia la capacidad "ir-unidad"; si no, enlace a _top).
  * ------------------------------------------------------------------- */
 (function () {
   "use strict";
 
-  const VERSION = "3.1.1";
+  const VERSION = "3.2.0";
   const $ = (sel, ctx) => (ctx || document).querySelector(sel);
   const $$ = (sel, ctx) => Array.from((ctx || document).querySelectorAll(sel));
   const reducido = () => !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -264,6 +267,22 @@
     return META[r.tipo] || META.personalizado;
   }
 
+  // Unidad anterior / siguiente (plugin 4.28): {anterior, siguiente, posicion, total}; cada lado
+  // {sectionid, unidad, titulo, url}. Un lado sin sectionid o sin URL http(s) se descarta.
+  function normalizarNavegacion(n) {
+    const lado = (x) => {
+      if (!x || typeof x !== "object") return null;
+      const id = Number(x.sectionid);
+      const url = urlSegura(x.url);
+      if (!(id > 0) || !/^https?:\/\//i.test(url) || !tieneTexto(x.unidad)) return null;
+      return { sectionid: id, unidad: String(x.unidad), titulo: typeof x.titulo === "string" ? x.titulo : "", url };
+    };
+    const o = n && typeof n === "object" ? n : {};
+    const total = Number(o.total) || 0;
+    const posicion = Number(o.posicion) || 0;
+    return { anterior: lado(o.anterior), siguiente: lado(o.siguiente), total, posicion: posicion > 0 && posicion <= total ? posicion : 0 };
+  }
+
   function obtenerDatos() {
     const recibidos = leerDatos() || {};
     // Los textos de relleno son SOLO para la vista suelta (sin window.name):
@@ -278,6 +297,7 @@
       descripcion: cadena(recibidos.descripcion, "descripcion"),
       duracion_estimada: cadena(recibidos.duracion_estimada, "duracion_estimada"),
       volver_url: typeof recibidos.volver_url === "string" ? recibidos.volver_url : "",
+      navegacion: normalizarNavegacion(recibidos.navegacion),
       fondos: normalizarFondos(recibidos.fondos),
       recursos: (Array.isArray(recibidos.recursos) ? recibidos.recursos : [])
         .map(mergeRecurso).filter(Boolean).filter((r) => r.visible)
@@ -752,6 +772,7 @@
       // En la ultima diapositiva la flecha "siguiente" no da la vuelta: queda oculta.
       $("#deckNext").classList.toggle("is-fin", this.actual === this.total - 1);
       $("#deckPrev").classList.toggle("is-fin", this.actual === 0);
+      this.el.toggleAttribute("data-fin", this.actual === this.total - 1); // tarjeta "Siguiente unidad"
     },
     anunciar() {
       $("#deckAnuncio").textContent = `Diapositiva ${this.actual + 1} de ${this.total}: ${decodificar(SLIDES[this.actual].label)}`;
@@ -814,17 +835,23 @@
   /* ---------------------------------------------------------------------
    * 6. INICIO DE LA UNIDAD
    * ------------------------------------------------------------------- */
-  // Mismo emblema que las franjas de "Unidades" del visor de curso: el
-  // estudiante reconoce la unidad que acaba de abrir.
-  function emblemaUnidad(nombre) {
+  // Tipo de unidad segun su nombre (Semana N, Conecta, Apoyo, Unidad N): emblema y saltos.
+  function claveUnidad(nombre) {
     const n = decodificar(nombre || "").toLowerCase();
     const num = n.match(/(\d+)/);
     const tipo = n.includes("conecta") ? "conecta" : n.includes("apoyo") ? "apoyo" : (n.includes("semana") && num) ? "semana" : "unidad";
-    const etiqueta = { semana: "Semana", conecta: "Conecta", apoyo: "Apoyo", unidad: "Unidad" }[tipo];
     const numero = num && (tipo === "semana" || tipo === "unidad") ? num[1] : "";
+    const icono = tipo === "conecta" ? "fa-comments" : tipo === "apoyo" ? "fa-handshake" : "fa-layer-group";
+    return { tipo, numero, icono, etiqueta: { semana: "Semana", conecta: "Conecta", apoyo: "Apoyo", unidad: "Unidad" }[tipo] };
+  }
+
+  // Mismo emblema que las franjas de "Unidades" del visor de curso: el
+  // estudiante reconoce la unidad que acaba de abrir.
+  function emblemaUnidad(nombre) {
+    const { tipo, numero, icono: ic, etiqueta } = claveUnidad(nombre);
     const centro = numero
       ? `<span class="emblema-num">${esc(dos(numero))}</span>`
-      : `<i class="fa-solid ${tipo === "conecta" ? "fa-comments" : tipo === "apoyo" ? "fa-handshake" : "fa-layer-group"}"></i>`;
+      : `<i class="fa-solid ${ic}"></i>`;
     return `<div class="emblema-unidad" data-tipo="${tipo}" aria-hidden="true">
       <span class="emblema-anillo emblema-anillo--1"></span>
       <span class="emblema-anillo emblema-anillo--2"><span class="emblema-satelite"></span></span>
@@ -950,6 +977,115 @@
         window.open(url, "_top");
       }, puente.estado === "presente" ? 2000 : 400);
     });
+  }
+
+  /* ---------------------------------------------------------------------
+   * 6b. Salto entre unidades (plugin 4.28, datos.navegacion)
+   *     Dos piezas chicas, nunca una diapositiva: en el inicio, la capsula
+   *     "Anterior · 03/06 · Siguiente" junto a "Volver a las unidades"; en la
+   *     ultima diapositiva, una tarjeta flotante "Siguiente unidad".
+   *     Son enlaces reales (target _top): sin puente navegan la ventana; con
+   *     el puente (capacidad "ir-unidad") Moodle abre la unidad a su manera
+   *     (pagina nueva en topics, mosaico en tiles) y valida el sectionid.
+   * ------------------------------------------------------------------- */
+  // "SEMANA 3" -> "Semana 3"; las siglas conocidas se respetan.
+  function nombreUnidad(s) {
+    const t = decodificar(s).replace(/\s+/g, " ").trim();
+    if (t !== t.toUpperCase() || !/\p{Lu}/u.test(t)) return t;
+    return t.toLowerCase().replace(/(^|[\s(«"-])(\p{L})/gu, (m, a, b) => a + b.toUpperCase())
+      .replace(/\b(u\.)?incca\b/gi, (m) => m.toUpperCase()).replace(/\bsena\b/gi, "SENA");
+  }
+  function discoUnidad(nombre) {
+    const k = claveUnidad(nombre);
+    return k.numero
+      ? `<span class="salto-disco" data-tipo="${k.tipo}" aria-hidden="true"><b>${esc(dos(k.numero))}</b></span>`
+      : `<span class="salto-disco" data-tipo="${k.tipo}" aria-hidden="true"><i class="fa-solid ${k.icono}"></i></span>`;
+  }
+  function etiquetaSalto(lado, item) {
+    const nombre = nombreUnidad(item.unidad);
+    const titulo = tieneTexto(item.titulo) ? decodificar(item.titulo).trim() : "";
+    return { nombre, titulo, aria: `${lado === "prev" ? "Unidad anterior" : "Unidad siguiente"}: ${nombre}${titulo ? " — " + titulo : ""}` };
+  }
+  function prepararSalto(a, item) {
+    a.href = item.url;
+    a.target = "_top";
+    a.dataset.sectionid = String(item.sectionid);
+    a.addEventListener("click", (e) => irAUnidad(e, a, item));
+  }
+  let saliendo = false;
+  function irAUnidad(e, a, item) {
+    if (e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; // pestana nueva: lo hace el navegador
+    if (!embebido) return;                                                     // vista suelta: enlace normal
+    if (saliendo) { e.preventDefault(); return; }
+    saliendo = true;
+    a.classList.add("is-cargando");
+    a.setAttribute("aria-busy", "true");
+    deck.el.dataset.saliendo = "";
+    if (!puenteTiene("ir-unidad")) return; // Moodle sin el puente nuevo: navega el enlace a _top
+    e.preventDefault();
+    let resuelto = false;
+    const onMensaje = (ev) => {
+      const d = mensajeDelPadre(ev);
+      if (!d || d.type !== "unidad-abriendo") return;
+      resuelto = true;
+      window.removeEventListener("message", onMensaje);
+    };
+    window.addEventListener("message", onMensaje);
+    enviarAlPadre({ type: "ir-unidad", sectionid: item.sectionid });
+    // Si Moodle no contesta (unidad que ya no existe, puente viejo), se navega la ventana completa.
+    setTimeout(() => {
+      if (resuelto) return;
+      window.removeEventListener("message", onMensaje);
+      window.open(item.url, "_top");
+    }, 1800);
+  }
+  // Volver con el boton "atras" del navegador (bfcache): el visor no debe quedar atenuado.
+  window.addEventListener("pageshow", () => {
+    saliendo = false;
+    if (deck.el) delete deck.el.dataset.saliendo;
+    $$(".is-cargando").forEach((x) => { x.classList.remove("is-cargando"); x.removeAttribute("aria-busy"); });
+  });
+
+  function initSaltoUnidades(datos) {
+    const nav = datos.navegacion;
+    const caja = $("#heroSemanas");
+    const tarjeta = $("#saltoSemana");
+    const ant = nav && nav.anterior, sig = nav && nav.siguiente;
+    if (ant || sig) {
+      const lado = (cual, item) => {
+        if (!item) return `<span class="semana-salto semana-salto--${cual} is-vacio" aria-hidden="true"></span>`;
+        const et = etiquetaSalto(cual, item);
+        return `<a class="semana-salto semana-salto--${cual}" data-lado="${cual}" aria-label="${esc(et.aria)}" title="${esc(et.titulo ? et.nombre + " · " + et.titulo : et.nombre)}">
+          <i class="fa-solid ${cual === "prev" ? "fa-chevron-left" : "fa-chevron-right"} semana-salto-flecha" aria-hidden="true"></i>
+          <span class="semana-salto-texto"><span class="semana-salto-rotulo">${cual === "prev" ? "Anterior" : "Siguiente"}</span><span class="semana-salto-nombre">${esc(et.nombre)}</span></span>
+        </a>`;
+      };
+      const pos = nav.posicion && nav.total > 1
+        ? `<span class="unidad-semanas-pos" role="img" aria-label="Unidad ${nav.posicion} de ${nav.total}"><b>${esc(dos(nav.posicion))}</b><i>/</i>${esc(dos(nav.total))}</span>`
+        : `<span class="unidad-semanas-pos unidad-semanas-pos--sola" aria-hidden="true"></span>`;
+      caja.innerHTML = lado("prev", ant) + pos + lado("next", sig);
+      if (ant) prepararSalto($(".semana-salto--prev", caja), ant);
+      if (sig) prepararSalto($(".semana-salto--next", caja), sig);
+      caja.hidden = false;
+    }
+    $("#heroArriba").hidden = $("#heroVolver").hidden && caja.hidden;
+
+    if (sig && SLIDES.length > 1) {
+      const et = etiquetaSalto("next", sig);
+      tarjeta.innerHTML = `
+        ${discoUnidad(sig.unidad)}
+        <span class="salto-semana-texto">
+          <span class="salto-semana-rotulo">Siguiente unidad</span>
+          <span class="salto-semana-nombre">${esc(et.nombre)}</span>
+          ${et.titulo ? `<span class="salto-semana-titulo">${esc(et.titulo)}</span>` : ""}
+        </span>
+        <span class="salto-semana-flecha" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>`;
+      tarjeta.setAttribute("aria-label", et.aria);
+      prepararSalto(tarjeta, sig);
+      tarjeta.hidden = false;
+      deck.el = deck.el || $("#deck");
+      deck.el.dataset.salto = "";
+    }
   }
 
   /* ---------------------------------------------------------------------
@@ -1359,6 +1495,7 @@
     SLIDES = [{ id: "hero", label: "Inicio", icon: "fa-house", escena: "inicio" }];
     paso("recursos", () => renderRecursos(datos));
     paso("inicio", () => renderInicio(datos));
+    paso("salto_unidades", () => initSaltoUnidades(datos));
     paso("videos_drive", () => {
       $$(".video-tarjeta[data-drive]").forEach((b) => marcarVideoDrive(b, $(".video-tarjeta-texto", b)));
       initVideosDrive();

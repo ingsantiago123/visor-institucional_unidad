@@ -15,8 +15,8 @@
 <link rel="preload" href="./assets/fonts/outfit-latin.woff2?v=3" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="./assets/fonts/jost-latin.woff2?v=3" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="./assets/vendor/fontawesome/css/all.min.css?v=6.7.2">
-<link rel="stylesheet" href="./assets/css/visor.css?v=3.1.1">
-<link rel="stylesheet" href="./assets/css/unidad.css?v=3.1.1">
+<link rel="stylesheet" href="./assets/css/visor.css?v=3.2.0">
+<link rel="stylesheet" href="./assets/css/unidad.css?v=3.2.0">
 </head>
 <body>
 
@@ -81,9 +81,13 @@
         <div class="slide-contenido">
           <div class="inicio-grid unidad-inicio-grid" id="heroGrid">
             <div class="inicio-texto">
-              <a class="unidad-volver rv" id="heroVolver" href="#" target="_blank" rel="noopener" hidden>
-                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Volver a las unidades
-              </a>
+              <div class="unidad-arriba rv" id="heroArriba">
+                <a class="unidad-volver" id="heroVolver" href="#" target="_blank" rel="noopener" hidden>
+                  <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Volver a las unidades
+                </a>
+                <!-- Unidad anterior / siguiente (datos.navegacion, plugin 4.28): dos saltos chicos, no una diapositiva. -->
+                <nav class="unidad-semanas" id="heroSemanas" aria-label="Otras unidades del curso" hidden></nav>
+              </div>
               <div class="etiqueta etiqueta--hielo rv" id="heroEtiqueta" style="--d:.06s"><i class="fa-solid fa-layer-group" aria-hidden="true"></i> Unidad</div>
               <h1 class="inicio-titulo rv rv--titulo" id="heroTitulo" style="--d:.16s"></h1>
               <p class="unidad-subtitulo rv" id="heroSubtitulo" style="--d:.28s" hidden></p>
@@ -114,6 +118,8 @@
   <button class="deck-flecha deck-flecha--prev" type="button" id="deckPrev" aria-label="Diapositiva anterior"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
   <button class="deck-flecha deck-flecha--next" type="button" id="deckNext" aria-label="Siguiente diapositiva"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
   <nav class="deck-nav" id="deckNav" aria-label="Recursos de la unidad"></nav>
+  <!-- Al llegar a la ultima diapositiva: invitacion discreta a seguir con la unidad siguiente. -->
+  <a class="salto-semana" id="saltoSemana" href="#" hidden></a>
   <p class="sr-only" id="deckAnuncio" aria-live="polite"></p>
 </div>
 
@@ -141,7 +147,7 @@
   <div class="dialogo-pie" id="dialogoContenidoPie" hidden></div>
 </dialog>
 
-<script src="./assets/js/fondo.js?v=3.1.1" defer></script>
-<script src="./assets/js/main.js?v=3.1.1" defer></script>
+<script src="./assets/js/fondo.js?v=3.2.0" defer></script>
+<script src="./assets/js/main.js?v=3.2.0" defer></script>
 </body>
 </html>
