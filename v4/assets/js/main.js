@@ -1,5 +1,7 @@
 /*!
- * U.INCCA · Visor de unidad v4 (4.0.1) — JavaScript propio, sin dependencias.
+ * U.INCCA · Visor de unidad v4 (4.1.0) — JavaScript propio, sin dependencias.
+ * 4.1.0 (plugin 4.32): el resumen de la semana de la plantilla nueva llega al inicio (titulo, descripcion) y el
+ * video de la semana tambien se abre desde un boton del inicio.
  * ---------------------------------------------------------------------
  * 4.0.0 (plugin 4.31): protocolo de aulas de 4 semanas. Campos OPCIONALES:
  *   protocolo:"4semanas", capa{clave,numero,nombre,semana,peso,evaluacion,proposito,movimiento,resultado,icono},
@@ -45,7 +47,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "4.0.1";
+  const VERSION = "4.1.0";
   const $ = (sel, ctx) => (ctx || document).querySelector(sel);
   const $$ = (sel, ctx) => Array.from((ctx || document).querySelectorAll(sel));
   const reducido = () => !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -1034,6 +1036,20 @@
     const comenzar = $("#heroComenzar");
     comenzar.hidden = datos.recursos.length === 0;
     comenzar.addEventListener("click", () => deck.goTo(1));
+
+    // 4.1.0: el video de la semana (plantilla nueva: vive en el resumen de la semana) tambien desde el inicio,
+    // junto a "Comenzar", con el mismo reproductor que el resto de videos.
+    const semana = datos.recursos.find((x) => x.tipo === "video" && /video (de la semana|of the week)/i.test(decodificar(x.titulo))
+      && x.items[0] && x.items[0].url);
+    if (semana && !$("#heroVideoSemana")) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.id = "heroVideoSemana";
+      b.className = "pildora";
+      b.innerHTML = `<span class="pildora-icono"><i class="fa-solid fa-circle-play" aria-hidden="true"></i></span> Ver el video de la semana`;
+      b.addEventListener("click", () => abrirVideo(semana.items[0].url, decodificar(semana.titulo), b));
+      comenzar.insertAdjacentElement("afterend", b);
+    }
 
     paso("capa", () => renderCapa(datos));
 
