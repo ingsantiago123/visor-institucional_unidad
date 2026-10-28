@@ -1,15 +1,16 @@
 /*!
- * U.INCCA · Visor de unidad v4 (4.0.0) — JavaScript propio, sin dependencias.
+ * U.INCCA · Visor de unidad v4 (4.0.1) — JavaScript propio, sin dependencias.
  * ---------------------------------------------------------------------
  * 4.0.0 (plugin 4.31): protocolo de aulas de 4 semanas. Campos OPCIONALES:
  *   protocolo:"4semanas", capa{clave,numero,nombre,semana,peso,evaluacion,proposito,movimiento,resultado,icono},
  *   tiempo[{clave,etiqueta,valor}], ranuras[{clave,etiqueta,icono,familia}],
  *   recursos[].ranura/familia/formato{clave,etiqueta,emoji,icono}/meta,
- *   recursos[tipo=experiencia]{fuente:url|html|zip,url,enlace,html},
+ *   recursos[tipo=experiencia]{fuente:url|html,url,enlace,html},
  *   actividades.items[].cmid/ranura/formato/peso.
  * Con protocolo: la semana se ordena por espacio, las actividades con espacio propio
  * (experiencia, entrega, parcial) salen a una diapositiva completa (portada HTML + boton
- * directo), las experiencias HTML/zip van en iframe con sandbox y cada espacio usa su
+ * directo), el HTML pegado de una experiencia va en iframe con sandbox (4.0.1: sin paquetes
+ * zip; una experiencia es un enlace o un HTML) y cada espacio usa su
  * familia de color (azul, blanca, cian, dorada). Sin protocolo se ve igual que v3.
  * ---------------------------------------------------------------------
  * Mismo contrato que v2 (todo llega como UN objeto JSON en window.name,
@@ -44,7 +45,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "4.0.0";
+  const VERSION = "4.0.1";
   const $ = (sel, ctx) => (ctx || document).querySelector(sel);
   const $$ = (sel, ctx) => Array.from((ctx || document).querySelectorAll(sel));
   const reducido = () => !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -289,7 +290,7 @@
         return Object.assign(base, { iframe: r.iframe || "", html: r.html || "" });
       case "experiencia":
         return Object.assign(base, {
-          fuente: ["url", "html", "zip"].indexOf(r.fuente) !== -1 ? r.fuente : "url",
+          fuente: r.fuente === "html" ? "html" : "url",
           url: r.url || "", enlace: r.enlace || r.url || "", html: r.html || ""
         });
     }
@@ -1461,7 +1462,7 @@
 
     /* 4.0.0: experiencia de aprendizaje a diapositiva completa. Sirve para el tipo "experiencia" y para un
        documento o recurso personalizado que el protocolo puso en el espacio "experiencia" (p. ej. la
-       GAMIFICACION importada de la plantilla). URL externa = iframe normal; zip y HTML = iframe con sandbox. */
+       GAMIFICACION importada de la plantilla). Enlace = iframe normal; HTML pegado = iframe con sandbox (srcdoc). */
     experiencia(r, p, t) {
       let fuente = r.fuente || "url";
       let url = r.url || "";
@@ -1474,8 +1475,6 @@
       let marco = "";
       if (fuente === "html" && tieneTexto(html.replace(/<[^>]*>/g, " ")) || (fuente === "html" && /<(canvas|svg|img|iframe|video|audio|script)/i.test(html))) {
         marco = `<iframe data-aislado="${registrarAislado(documentoExperiencia(html))}" title="${texto(r.titulo)}" sandbox="${SANDBOX_EXPERIENCIA}" allow="autoplay; fullscreen; clipboard-write"></iframe>`;
-      } else if (fuente === "zip" && /^https?:\/\//i.test(url)) {
-        marco = `<iframe data-diferido="${esc(url)}" title="${texto(r.titulo)}" sandbox="${SANDBOX_EXPERIENCIA}" allow="autoplay; fullscreen; clipboard-write"></iframe>`;
       } else if (fuente === "url" && url) {
         marco = `<iframe data-diferido="${esc(toEmbedUrl(url))}" title="${texto(r.titulo)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen; clipboard-write" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
       }
