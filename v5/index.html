@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Visor de unidad — U.INCCA</title>
+<!-- v5 5.0.0: CONECTA con inicio propio y tarjetas; INCCAPOYO sin portada a todo el visor (sobre v4: protocolo de 4 semanas). -->
+<meta name="description" content="Visor de los recursos de una unidad/semana de un curso de la Universidad INCCA de Colombia: lecturas, videos, documentos, enlaces y actividades.">
+<meta name="robots" content="noindex, follow">
+<meta name="theme-color" content="#040B3C">
+
+<link rel="icon" href="./assets/img/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="./assets/img/apple-touch-icon-180.png">
+
+<!-- Todo se sirve desde el propio visor: fuentes, iconos e imagenes (cero terceros). -->
+<link rel="preload" href="./assets/fonts/outfit-latin.woff2?v=3" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="./assets/fonts/jost-latin.woff2?v=3" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="./assets/vendor/fontawesome/css/all.min.css?v=6.7.2">
+<link rel="stylesheet" href="./assets/css/visor.css?v=5.0.0">
+<link rel="stylesheet" href="./assets/css/unidad.css?v=5.0.0">
+</head>
+<body>
+
+<noscript>
+  <div class="sin-js"><p>Este contenido interactivo necesita JavaScript habilitado en tu navegador. Actívalo y recarga la página.</p></div>
+</noscript>
+
+<div class="deck" id="deck" data-tema="oscuro">
+
+  <!-- Fondo comun de todo el mazo: el mismo escenario del visor de curso (foto + velo + red de particulas). -->
+  <div class="escenario" id="escenario" data-base="noche" data-tono="oscuro" data-red aria-hidden="true">
+    <div class="escenario-base escenario-base--noche"></div>
+    <div class="escenario-base escenario-base--gris"></div>
+    <div class="escenario-base escenario-base--docente"></div>
+    <div class="escenario-base escenario-base--blanca"></div>
+    <div class="escenario-base escenario-base--cian"></div>
+    <div class="escenario-base escenario-base--carbon"></div>
+    <img class="escenario-foto" id="fondoFotoA" alt="" decoding="async" fetchpriority="high">
+    <img class="escenario-foto" id="fondoFotoB" alt="" decoding="async">
+    <div class="escenario-velo velo--inicio is-visible" id="fondoVeloA"></div>
+    <div class="escenario-velo" id="fondoVeloB"></div>
+    <canvas class="escenario-ondas" id="fondoOndas"></canvas>
+    <canvas class="escenario-red" id="fondoRed"></canvas>
+    <!-- Familia cian: cuadrados blancos que suben (solo transform/opacity; quietos con movimiento reducido). -->
+    <div class="escenario-cuadrados"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <div class="escenario-vineta"></div>
+  </div>
+  <script>
+    /* La foto de la portada arranca a descargarse YA, antes que el CSS y el
+       JS: la de la unidad (datos.fondos.hero o .general) o la del visor. */
+    (function () {
+      var d = null;
+      try { d = window.name ? JSON.parse(window.name) : null; } catch (e) { d = null; }
+      if (!d || typeof d !== "object" || Array.isArray(d)) d = null;
+      window.__visorDatos = d;
+      var img = document.getElementById("fondoFotoA");
+      var f = d && d.fondos && typeof d.fondos === "object" ? d.fondos : null;
+      var v = f ? (f.hero || f.general) : null;
+      var ok = function (u) { return (typeof u === "string" && /^https?:\/\//i.test(u.trim())) ? u.trim() : ""; };
+      var url = "", clave = "";
+      if (typeof v === "string" && ok(v)) { url = ok(v); clave = "r:" + url + "#oscuro"; }
+      else if (v && typeof v === "object") {
+        if (ok(v.oscuro)) { url = ok(v.oscuro); clave = "g:" + url; }
+        else if (ok(v.original)) { url = ok(v.original); clave = "r:" + url + "#oscuro"; }
+      }
+      if (url) {
+        if (clave.charAt(0) === "r") img.className += " is-propia tono-oscuro";
+        img.src = url;
+      } else {
+        clave = "d:oscuro";
+        img.sizes = "100vw";
+        img.srcset = "./assets/img/fondo-oscuro-960.webp 960w, ./assets/img/fondo-oscuro-1686.webp 1686w";
+        img.src = "./assets/img/fondo-oscuro-1686.webp";
+      }
+      img.setAttribute("data-clave", clave);
+    })();
+  </script>
+
+  <div class="deck-progreso" aria-hidden="true"><span id="deckProgreso"></span></div>
+
+  <main class="slides" id="slides" aria-label="Recursos de la unidad, por diapositivas">
+
+    <!-- INICIO DE LA UNIDAD: el mismo emblema que el estudiante vio en las unidades del curso.
+         Las diapositivas de cada recurso las crea main.js, en el orden final del JSON. -->
+    <section class="slide inicio unidad-inicio" id="hero" role="group" aria-roledescription="diapositiva" aria-label="Inicio de la unidad">
+      <div class="slide-cuerpo">
+        <div class="slide-contenido">
+          <div class="inicio-grid unidad-inicio-grid" id="heroGrid">
+            <div class="inicio-texto">
+              <div class="unidad-arriba rv" id="heroArriba">
+                <a class="unidad-volver" id="heroVolver" href="#" target="_blank" rel="noopener" hidden>
+                  <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Volver a las unidades
+                </a>
+                <!-- Unidad anterior / siguiente (datos.navegacion, plugin 4.28): dos saltos chicos, no una diapositiva. -->
+                <nav class="unidad-semanas" id="heroSemanas" aria-label="Otras unidades del curso" hidden></nav>
+              </div>
+              <div class="etiqueta etiqueta--hielo rv" id="heroEtiqueta" style="--d:.06s"><i class="fa-solid fa-layer-group" aria-hidden="true"></i> Unidad</div>
+              <h1 class="inicio-titulo rv rv--titulo" id="heroTitulo" style="--d:.16s"></h1>
+              <p class="unidad-subtitulo rv" id="heroSubtitulo" style="--d:.28s" hidden></p>
+              <!-- 4.0.0: capa del protocolo de 4 semanas (semana, peso, proposito, tiempo). -->
+              <div class="unidad-capa rv" id="heroCapa" style="--d:.33s" hidden></div>
+              <div class="inicio-resumen-caja rv" id="heroResumenCaja" style="--d:.38s" hidden>
+                <p class="inicio-resumen lectura" id="heroResumen"></p>
+              </div>
+              <div class="inicio-acciones rv" id="heroAcciones" style="--d:.52s">
+                <button class="boton boton--luz" type="button" id="heroComenzar" hidden>
+                  <i class="fa-solid fa-arrow-right" aria-hidden="true"></i> Comenzar la unidad
+                </button>
+                <button class="pildora pildora--oro" type="button" id="heroIrActividades" hidden>
+                  <span class="pildora-icono"><i class="fa-solid fa-list-check" aria-hidden="true"></i></span> Ir a actividades
+                  <span class="pildora-contador" hidden></span>
+                </button>
+              </div>
+            </div>
+            <div class="unidad-inicio-lado rv rv--derecha" style="--d:.3s">
+              <div class="unidad-emblema" id="heroEmblema"></div>
+              <div class="inicio-ficha unidad-ficha" id="heroFicha" role="list" aria-label="Contenido de la unidad"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <button class="deck-flecha deck-flecha--prev" type="button" id="deckPrev" aria-label="Diapositiva anterior"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
+  <button class="deck-flecha deck-flecha--next" type="button" id="deckNext" aria-label="Siguiente diapositiva"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+  <nav class="deck-nav" id="deckNav" aria-label="Recursos de la unidad"></nav>
+  <!-- Al llegar a la ultima diapositiva: invitacion discreta a seguir con la unidad siguiente. -->
+  <a class="salto-semana" id="saltoSemana" href="#" hidden></a>
+  <p class="sr-only" id="deckAnuncio" aria-live="polite"></p>
+</div>
+
+<!-- Dialogo de video: el reproductor se crea al abrir y se destruye al cerrar. -->
+<dialog class="dialogo-video" id="dialogoVideo" aria-labelledby="dialogoVideoTitulo">
+  <div class="dialogo-cabeza">
+    <h2 class="dialogo-titulo" id="dialogoVideoTitulo">Video</h2>
+    <a class="dialogo-externo" id="dialogoVideoExterno" href="#" target="_blank" rel="noopener" hidden>
+      <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> <span>Abrir en Google Drive</span>
+    </a>
+    <button class="dialogo-cerrar" type="button" data-cerrar aria-label="Cerrar el video" autofocus><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+  </div>
+  <div class="dialogo-pantalla" id="dialogoVideoPantalla"></div>
+  <p class="dialogo-nota" id="dialogoVideoNota" hidden>Si el video no carga o Google pide acceso, usa «Abrir en Google Drive».</p>
+</dialog>
+
+<!-- Dialogo de contenido: lecturas y documentos a pantalla completa, detalle de actividades. Se vacia al cerrar. -->
+<dialog class="dialogo-contenido" id="dialogoContenido" aria-labelledby="dialogoContenidoTitulo">
+  <div class="dialogo-cabeza">
+    <h2 class="dialogo-titulo" id="dialogoContenidoTitulo"></h2>
+    <button class="dialogo-cerrar" type="button" data-cerrar aria-label="Cerrar" autofocus><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+  </div>
+  <p class="dialogo-bajada" id="dialogoContenidoBajada" hidden></p>
+  <div class="dialogo-cuerpo" id="dialogoContenidoCuerpo"></div>
+  <div class="dialogo-pie" id="dialogoContenidoPie" hidden></div>
+</dialog>
+
+<script src="./assets/js/fondo.js?v=5.0.0" defer></script>
+<script src="./assets/js/main.js?v=5.0.0" defer></script>
+</body>
+</html>
