@@ -16,9 +16,9 @@
 <link rel="preload" href="./assets/fonts/outfit-latin.woff2?v=3" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="./assets/fonts/jost-latin.woff2?v=3" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="./assets/vendor/fontawesome/css/all.min.css?v=6.7.2">
-<link rel="stylesheet" href="./assets/css/visor.css?v=7.1.1">
-<link rel="stylesheet" href="./assets/css/unidad.css?v=7.1.1">
-<link rel="stylesheet" href="./assets/css/familias.css?v=7.1.1">
+<link rel="stylesheet" href="./assets/css/visor.css?v=7.1.2">
+<link rel="stylesheet" href="./assets/css/unidad.css?v=7.1.2">
+<link rel="stylesheet" href="./assets/css/familias.css?v=7.1.2">
 </head>
 <body>
 
@@ -116,14 +116,14 @@
             </div>
             <div class="unidad-inicio-lado rv rv--derecha" style="--d:.3s">
               <div class="unidad-emblema" id="heroEmblema"></div>
-              <!-- 7.1.1: video de la semana en el inicio con la misma tarjeta de los demas videos (miniatura + play);
-                   se reproduce en la ventana del visor. Sin emblema ni cifras al lado. -->
-              <figure class="unidad-video unidad-video--grande unidad-inicio-video" id="heroPlay" hidden>
-                <button class="video-tarjeta" type="button" id="heroVideoBtn" aria-label="Reproducir el video de la semana">
-                  <span class="boton-play" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 6.2v11.6c0 .9 1 1.45 1.76.97l9.1-5.8a1.15 1.15 0 0 0 0-1.94l-9.1-5.8C9.6 4.75 8.6 5.3 8.6 6.2z"/></svg></span>
-                  <span class="video-tarjeta-texto" id="heroVideoTexto">Video de la semana</span>
+              <!-- 7.1.2: video de la semana = solo el boton de reproduccion (sin tarjeta ni miniatura); se reproduce
+                   en la ventana del visor. Sin emblema ni cifras al lado. -->
+              <div class="inicio-play" id="heroPlay" hidden>
+                <button class="boton-play" type="button" id="heroVideoBtn" aria-label="Reproducir el video de la semana">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 6.2v11.6c0 .9 1 1.45 1.76.97l9.1-5.8a1.15 1.15 0 0 0 0-1.94l-9.1-5.8C9.6 4.75 8.6 5.3 8.6 6.2z"/></svg>
                 </button>
-              </figure>
+                <span class="boton-play-texto" id="heroVideoTexto" aria-hidden="true">Ver el video de la semana</span>
+              </div>
               <div class="inicio-ficha unidad-ficha" id="heroFicha" role="list" aria-label="Contenido de la unidad"></div>
             </div>
           </div>
@@ -193,7 +193,7 @@
   </div>
 </dialog>
 
-<script src="./assets/js/fondo.js?v=7.1.1" defer></script>
-<script src="./assets/js/main.js?v=7.1.1" defer></script>
+<script src="./assets/js/fondo.js?v=7.1.2" defer></script>
+<script src="./assets/js/main.js?v=7.1.2" defer></script>
 </body>
 </html>

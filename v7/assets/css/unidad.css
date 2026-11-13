@@ -89,11 +89,25 @@ a.enlace-mas { margin-top: 0; }
 .unidad-inicio .inicio-resumen p:last-child { margin-bottom: 0; }
 .unidad-inicio--video .unidad-inicio-grid { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: clamp(28px, 4vw, 64px); }
 .unidad-inicio--video .unidad-inicio-lado { justify-content: center; }
-/* 7.1.1: la tarjeta del video de la semana (miniatura + play, como los demas videos) ocupa la columna derecha. */
-.unidad-inicio-video { width: 100%; margin: 0; }
-.unidad-inicio-video[hidden], .unidad-emblema[hidden] { display: none; }
-.unidad-inicio--video .unidad-inicio-lado { width: 100%; max-width: 560px; justify-self: end; }
-.slide.is-active .unidad-inicio-video { animation: rv-escala .7s var(--ease) .3s backwards; }
+/* 7.1.2: el video de la semana es solo el boton de reproduccion (vidrio) con su leyenda, centrado en la columna. */
+.inicio-play {
+  position: relative; isolation: isolate;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+  width: 100%; min-height: clamp(180px, 34vh, 340px);
+}
+.inicio-play[hidden], .unidad-emblema[hidden] { display: none; }
+.inicio-play::before {
+  content: ""; position: absolute; z-index: -1;
+  width: min(320px, 82%); aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle, rgba(101, 203, 227, .2) 0%, rgba(43, 139, 250, .07) 42%, transparent 70%);
+  pointer-events: none;
+}
+.inicio-play .boton-play { width: clamp(92px, 12vh, 120px); height: clamp(92px, 12vh, 120px); }
+.slide.is-active .inicio-play { animation: rv-escala .7s var(--ease) .3s backwards; }
+:is(.slide[data-familia="blanca"], .slide[data-familia="cian"]) .inicio-play::before { background: radial-gradient(circle, rgba(1, 46, 70, .12) 0%, transparent 68%); }
+.slide[data-familia="dorada"] .inicio-play::before { background: radial-gradient(circle, rgba(213, 183, 115, .2) 0%, transparent 68%); }
+.slide[data-familia] .inicio-play .boton-play-texto { color: var(--f-sub); }
+.unidad-inicio--video .unidad-inicio-lado { justify-content: center; }
 
 /* Ficha compacta: icono + cifra + texto en una fila; la duracion ocupa el ancho. */
 .unidad-ficha { width: 100%; max-width: 400px; justify-self: center; gap: 12px; }
@@ -515,10 +529,13 @@ a.enlace-mas { margin-top: 0; }
   .unidad-documento .medio-marco { height: 60vh; }
   /* Inicio en una columna: emblema arriba (chico), luego el texto y al final la ficha. */
   .unidad-inicio-lado { display: contents; }
-  .unidad-inicio .inicio-resumen-caja, .unidad-inicio--texto .inicio-resumen-caja { max-height: none; overflow: visible; text-align: left; }
+  /* Tableta y celular: la introduccion conserva su desplazamiento propio para que el video no quede muy abajo. */
+  .unidad-inicio .inicio-resumen-caja, .unidad-inicio--texto .inicio-resumen-caja { max-height: min(42vh, 380px); overflow-y: auto; text-align: left; }
   .unidad-inicio--video .unidad-inicio-grid { grid-template-columns: minmax(0, 1fr); }
   .unidad-emblema { order: -1; width: clamp(110px, 30vw, 150px); margin-bottom: -6px; }
   .unidad-ficha { order: 2; }
+  .inicio-play { order: 2; min-height: 160px; gap: 12px; }
+  .inicio-play .boton-play { width: 84px; height: 84px; }
   #heroEtiqueta { display: none; } /* el emblema ya dice "Semana" o "Unidad" */
   .inicio-texto { order: 1; }
   .unidad-emblema .emblema-num { font-size: clamp(36px, 11vw, 48px); }
@@ -1111,4 +1128,16 @@ body[data-espacio="apoyo"] .deck-flecha { display: none; }
 @media (max-width: 760px) {
   .apoyo-barra { flex-wrap: wrap; }
   .apoyo-barra .unidad-arriba { order: 4; width: 100%; flex-wrap: wrap; }
+}
+
+/* 7.1.2: pantallas bajas (portatiles con el iframe de Moodle de 600-760 px): introduccion mas corta, botones
+   lejos de la barra de navegacion. */
+@media (max-height: 760px) and (min-width: 901px) {
+  .unidad-inicio--texto .inicio-resumen-caja { max-height: 30vh; }
+  .unidad-inicio .unidad-subtitulo { font-size: clamp(15px, 1.3vw, 19px); }
+  .inicio-play { min-height: 170px; }
+  .inicio-play .boton-play { width: 92px; height: 92px; }
+}
+@media (max-height: 620px) and (min-width: 901px) {
+  .unidad-inicio--texto .inicio-resumen-caja { max-height: 24vh; }
 }

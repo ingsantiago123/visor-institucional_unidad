@@ -54,7 +54,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "7.1.1";
+  const VERSION = "7.1.2";
   const $ = (sel, ctx) => (ctx || document).querySelector(sel);
   const $$ = (sel, ctx) => Array.from((ctx || document).querySelectorAll(sel));
   const reducido = () => !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -1190,15 +1190,6 @@
     if (!vs) $("#heroEmblema").innerHTML = emblemaUnidad(nombre);
     if (vs) {
       const b = $("#heroVideoBtn");
-      const embed = toEmbedUrl(vs.url);
-      const mini = embed ? miniaturaVideo(embed) : "";
-      if (mini) {
-        // La miniatura se pide al final del arranque (no compite con el texto del inicio).
-        const img = document.createElement("img");
-        img.alt = ""; img.decoding = "async"; img.dataset.src = mini;
-        b.prepend(img);
-        requestAnimationFrame(() => setTimeout(() => cargarImagenes(b), 0));
-      }
       b.addEventListener("click", () => abrirVideo(vs.url, decodificar(vs.titulo) || "Video de la semana", b));
       if (esVideoDrive(vs.url)) marcarVideoDrive(b, $("#heroVideoTexto"));
     }
