@@ -81,6 +81,32 @@ a.enlace-mas { margin-top: 0; }
 .slide.is-active .unidad-emblema .emblema-anillo--2 { animation: girar 32s linear infinite; }
 .slide.is-active .unidad-emblema .emblema-disco { animation: rv-escala .8s var(--ease) .35s backwards; }
 
+/* 7.0.0: inicio de la semana como el inicio del visor general (propuesta "Titulo" / "Semana 1"): la introduccion
+   con desplazamiento propio a la izquierda (3fr); a la derecha el play del video de la semana y las cifras (2fr). */
+.unidad-inicio .inicio-resumen-caja { max-height: min(30vh, 240px); padding-right: 8px; }
+.unidad-inicio--texto .inicio-resumen-caja { max-width: 760px; max-height: min(38vh, 340px); }
+.unidad-inicio .inicio-resumen p { margin: 0 0 .85em; }
+.unidad-inicio .inicio-resumen p:last-child { margin-bottom: 0; }
+.unidad-inicio--video .unidad-inicio-grid { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: clamp(28px, 4vw, 64px); }
+.unidad-inicio--video .unidad-inicio-lado { justify-content: center; }
+.inicio-play {
+  position: relative; isolation: isolate;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+  min-height: clamp(150px, 26vh, 240px); width: 100%;
+}
+.inicio-play[hidden], .unidad-emblema[hidden] { display: none; }
+.inicio-play::before {
+  content: ""; position: absolute; z-index: -1;
+  width: min(300px, 80%); aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle, rgba(101, 203, 227, .22) 0%, rgba(43, 139, 250, .08) 40%, transparent 70%);
+  pointer-events: none;
+}
+.inicio-play .boton-play { width: clamp(84px, 9vh, 104px); height: clamp(84px, 9vh, 104px); }
+.slide.is-active .inicio-play { animation: rv-escala .7s var(--ease) .3s backwards; }
+:is(.slide[data-familia="blanca"], .slide[data-familia="cian"]) .inicio-play::before { background: radial-gradient(circle, rgba(1, 46, 70, .12) 0%, transparent 68%); }
+.slide[data-familia="dorada"] .inicio-play::before { background: radial-gradient(circle, rgba(213, 183, 115, .2) 0%, transparent 68%); }
+.slide[data-familia] .inicio-play .boton-play-texto { color: var(--f-sub); }
+
 /* Ficha compacta: icono + cifra + texto en una fila; la duracion ocupa el ancho. */
 .unidad-ficha { width: 100%; max-width: 400px; justify-self: center; gap: 12px; }
 .unidad-ficha .ficha {
@@ -501,6 +527,9 @@ a.enlace-mas { margin-top: 0; }
   .unidad-documento .medio-marco { height: 60vh; }
   /* Inicio en una columna: emblema arriba (chico), luego el texto y al final la ficha. */
   .unidad-inicio-lado { display: contents; }
+  .unidad-inicio .inicio-resumen-caja, .unidad-inicio--texto .inicio-resumen-caja { max-height: none; overflow: visible; text-align: left; }
+  .unidad-inicio--video .unidad-inicio-grid { grid-template-columns: minmax(0, 1fr); }
+  .inicio-play { min-height: 170px; }
   .unidad-emblema { order: -1; width: clamp(110px, 30vw, 150px); margin-bottom: -6px; }
   .unidad-ficha { order: 2; }
   #heroEtiqueta { display: none; } /* el emblema ya dice "Semana" o "Unidad" */

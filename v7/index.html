@@ -16,9 +16,9 @@
 <link rel="preload" href="./assets/fonts/outfit-latin.woff2?v=3" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="./assets/fonts/jost-latin.woff2?v=3" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="./assets/vendor/fontawesome/css/all.min.css?v=6.7.2">
-<link rel="stylesheet" href="./assets/css/visor.css?v=7.0.0">
-<link rel="stylesheet" href="./assets/css/unidad.css?v=7.0.0">
-<link rel="stylesheet" href="./assets/css/familias.css?v=7.0.0">
+<link rel="stylesheet" href="./assets/css/visor.css?v=7.1.0">
+<link rel="stylesheet" href="./assets/css/unidad.css?v=7.1.0">
+<link rel="stylesheet" href="./assets/css/familias.css?v=7.1.0">
 </head>
 <body>
 
@@ -100,8 +100,9 @@
               <p class="unidad-subtitulo rv" id="heroSubtitulo" style="--d:.28s" hidden></p>
               <!-- 4.0.0: capa del protocolo de 4 semanas (semana, peso, proposito, tiempo). -->
               <div class="unidad-capa rv" id="heroCapa" style="--d:.33s" hidden></div>
-              <div class="inicio-resumen-caja rv" id="heroResumenCaja" style="--d:.38s" hidden>
-                <p class="inicio-resumen lectura" id="heroResumen"></p>
+              <!-- 7.0.0: la introduccion de la semana con desplazamiento propio (como el inicio del visor general). -->
+              <div class="inicio-resumen-caja lectura rv" id="heroResumenCaja" style="--d:.38s" hidden>
+                <div class="inicio-resumen" id="heroResumen"></div>
               </div>
               <div class="inicio-acciones rv" id="heroAcciones" style="--d:.52s">
                 <button class="boton boton--luz" type="button" id="heroComenzar" hidden>
@@ -115,6 +116,13 @@
             </div>
             <div class="unidad-inicio-lado rv rv--derecha" style="--d:.3s">
               <div class="unidad-emblema" id="heroEmblema"></div>
+              <!-- 7.0.0: video de la semana en el inicio (play grande), como la presentacion del visor general. -->
+              <div class="inicio-play" id="heroPlay" hidden>
+                <button class="boton-play" type="button" id="heroVideoBtn" aria-label="Reproducir el video de la semana">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 6.2v11.6c0 .9 1 1.45 1.76.97l9.1-5.8a1.15 1.15 0 0 0 0-1.94l-9.1-5.8C9.6 4.75 8.6 5.3 8.6 6.2z"/></svg>
+                </button>
+                <span class="boton-play-texto" id="heroVideoTexto" aria-hidden="true">Ver el video de la semana</span>
+              </div>
               <div class="inicio-ficha unidad-ficha" id="heroFicha" role="list" aria-label="Contenido de la unidad"></div>
             </div>
           </div>
@@ -184,7 +192,7 @@
   </div>
 </dialog>
 
-<script src="./assets/js/fondo.js?v=7.0.0" defer></script>
-<script src="./assets/js/main.js?v=7.0.0" defer></script>
+<script src="./assets/js/fondo.js?v=7.1.0" defer></script>
+<script src="./assets/js/main.js?v=7.1.0" defer></script>
 </body>
 </html>

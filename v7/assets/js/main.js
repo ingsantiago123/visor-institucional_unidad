@@ -54,7 +54,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "7.0.0";
+  const VERSION = "7.1.0";
   const $ = (sel, ctx) => (ctx || document).querySelector(sel);
   const $$ = (sel, ctx) => Array.from((ctx || document).querySelectorAll(sel));
   const reducido = () => !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -423,6 +423,26 @@
     const it = v.items[0];
     t.video = { url: it.url, titulo: tieneTexto(it.titulo) && it.titulo !== t.titulo ? it.titulo : (tieneTexto(v.titulo) ? v.titulo : "") };
     return recursos.slice(0, i + 1).concat(recursos.slice(i + 2));
+  }
+
+  /**
+   * 7.0.0: el video de la semana sale de su diapositiva y va al inicio. Es el recurso de video titulado
+   * "Video de la semana" (importado del resumen) o, si no hay, el que el plugin manda en vivo desde el resumen
+   * original (datos.video_semana, plugin 4.36).
+   */
+  function absorberVideoSemana(datos, recibido) {
+    const i = datos.recursos.findIndex((x) => x.tipo === "video" && /video (de la semana|of the week)/i.test(decodificar(x.titulo))
+      && x.items[0] && toEmbedUrl(x.items[0].url));
+    if (i !== -1) {
+      const r = datos.recursos[i];
+      datos.videoSemana = { url: r.items[0].url, titulo: r.titulo };
+      datos.recursos.splice(i, 1);
+    } else if (recibido && typeof recibido === "object" && typeof recibido.url === "string" && toEmbedUrl(recibido.url)) {
+      datos.videoSemana = { url: recibido.url, titulo: typeof recibido.titulo === "string" ? recibido.titulo : "" };
+    } else {
+      datos.videoSemana = null;
+    }
+    return datos;
   }
 
   function obtenerDatos() {
@@ -1145,7 +1165,8 @@
 
     const resumen = decodificar(datos.descripcion).trim();
     const r = $("#heroResumen");
-    r.textContent = resumen;
+    // 7.0.0: parrafos (linea en blanco) en una caja con desplazamiento propio.
+    r.innerHTML = resumen.split(/\n{2,}/).filter(tieneTexto).map((p) => `<p>${esc(p.trim())}</p>`).join("");
     $("#heroResumenCaja").hidden = !resumen;
     if (resumen.length > 380) r.dataset.largo = "largo"; else if (resumen.length > 230) r.dataset.largo = "medio";
 
@@ -1157,18 +1178,18 @@
     comenzar.hidden = datos.recursos.length === 0;
     comenzar.addEventListener("click", () => deck.goTo(1));
 
-    // 4.1.0: el video de la semana (plantilla nueva: vive en el resumen de la semana) tambien desde el inicio,
-    // junto a "Comenzar", con el mismo reproductor que el resto de videos.
-    const semana = datos.recursos.find((x) => x.tipo === "video" && /video (de la semana|of the week)/i.test(decodificar(x.titulo))
-      && x.items[0] && x.items[0].url);
-    if (semana && !$("#heroVideoSemana")) {
-      const b = document.createElement("button");
-      b.type = "button";
-      b.id = "heroVideoSemana";
-      b.className = "pildora";
-      b.innerHTML = `<span class="pildora-icono"><i class="fa-solid fa-circle-play" aria-hidden="true"></i></span> Ver el video de la semana`;
-      b.addEventListener("click", () => abrirVideo(semana.items[0].url, decodificar(semana.titulo), b));
-      comenzar.insertAdjacentElement("afterend", b);
+    // 7.0.0: el video de la semana va en el inicio con su play grande (como la presentacion del visor general):
+    // texto con desplazamiento a la izquierda, video y cifras a la derecha. Ver absorberVideoSemana.
+    const vs = datos.videoSemana;
+    const sec = $("#hero");
+    sec.classList.toggle("unidad-inicio--video", !!vs);
+    sec.classList.toggle("unidad-inicio--texto", !!resumen);
+    $("#heroPlay").hidden = !vs;
+    $("#heroEmblema").hidden = !!vs;
+    if (vs) {
+      const b = $("#heroVideoBtn");
+      b.addEventListener("click", () => abrirVideo(vs.url, decodificar(vs.titulo) || "Video de la semana", b));
+      if (esVideoDrive(vs.url)) marcarVideoDrive(b, $("#heroVideoTexto"));
     }
 
     paso("capa", () => renderCapa(datos));
@@ -2264,7 +2285,7 @@
    * Arranque: cada paso aislado
    * ------------------------------------------------------------------- */
   document.addEventListener("DOMContentLoaded", () => {
-    const datos = paso("datos", obtenerDatos);
+    const datos = paso("datos", () => { const d = obtenerDatos(); return absorberVideoSemana(d, (leerDatos() || {}).video_semana); });
     if (!datos) return;
     origenPadre = datos.origen_padre;
     iniciarSaludo("unidad");
