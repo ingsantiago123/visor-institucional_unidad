@@ -54,7 +54,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "7.1.0";
+  const VERSION = "7.1.1";
   const $ = (sel, ctx) => (ctx || document).querySelector(sel);
   const $$ = (sel, ctx) => Array.from((ctx || document).querySelectorAll(sel));
   const reducido = () => !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -1170,8 +1170,8 @@
     $("#heroResumenCaja").hidden = !resumen;
     if (resumen.length > 380) r.dataset.largo = "largo"; else if (resumen.length > 230) r.dataset.largo = "medio";
 
-    $("#heroEmblema").innerHTML = emblemaUnidad(nombre);
-    renderFicha(datos);
+    // 7.1.1: sin cifras en el inicio de la semana (se veia sobrecargado); CONECTA pone sus pilares en la misma caja.
+    $("#heroFicha").hidden = true;
     initVolver(datos);
 
     const comenzar = $("#heroComenzar");
@@ -1186,8 +1186,19 @@
     sec.classList.toggle("unidad-inicio--texto", !!resumen);
     $("#heroPlay").hidden = !vs;
     $("#heroEmblema").hidden = !!vs;
+    // Sin video queda el emblema de la semana; con video, solo la tarjeta del video (la animacion no se dibuja).
+    if (!vs) $("#heroEmblema").innerHTML = emblemaUnidad(nombre);
     if (vs) {
       const b = $("#heroVideoBtn");
+      const embed = toEmbedUrl(vs.url);
+      const mini = embed ? miniaturaVideo(embed) : "";
+      if (mini) {
+        // La miniatura se pide al final del arranque (no compite con el texto del inicio).
+        const img = document.createElement("img");
+        img.alt = ""; img.decoding = "async"; img.dataset.src = mini;
+        b.prepend(img);
+        requestAnimationFrame(() => setTimeout(() => cargarImagenes(b), 0));
+      }
       b.addEventListener("click", () => abrirVideo(vs.url, decodificar(vs.titulo) || "Video de la semana", b));
       if (esVideoDrive(vs.url)) marcarVideoDrive(b, $("#heroVideoTexto"));
     }
