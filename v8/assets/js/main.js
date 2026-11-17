@@ -1464,7 +1464,8 @@
   function animarContadores(raiz) {
     $$("[data-contador]", raiz).forEach((el) => {
       const meta = Number(el.dataset.contador) || 0;
-      if (reducido() || meta <= 1) { el.textContent = String(meta); return; }
+      // 8.0.0: al cargar (y en equipos modestos) la cifra aparece final (el conteo forzaba un layout por cuadro).
+      if (reducido() || meta <= 1 || document.querySelector(".deck--arranque") || document.documentElement.classList.contains("equipo-modesto")) { el.textContent = String(meta); return; }
       const duracion = 1100;
       let inicio = null;
       el.textContent = "0";

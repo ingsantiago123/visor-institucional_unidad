@@ -169,6 +169,8 @@ a { color: inherit; }
 .slide.is-dormida { visibility: hidden; }
 /* 8.0.0 rendimiento: al cargar, la primera diapositiva aparece completa de una vez (el contenido principal no espera la
    animacion de entrada); main.js quita .deck--arranque en el primer cambio y las demas conservan su entrada. */
+/* 8.0.0: una diapositiva dormida no se dibuja ni se mide (el navegador se salta su layout y su pintura). */
+.slide.is-dormida { content-visibility: hidden; }
 .deck--arranque .slide { transition: none; }
 .deck--arranque .slide.is-active :is(.rv, .ficha, .tarjeta, .act, .reunion-franja, .medallon, .inicio-barra, .ruta-linea,
   .emblema-disco, .inicio-play, .unidad-leccion, .unidad-video, .unidad-enlace, .unidad-libro, .conecta-pilar, .franja-texto > *),

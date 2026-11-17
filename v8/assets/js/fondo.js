@@ -690,6 +690,21 @@
     let worker = null, local = null;
 
     const medir = () => ({ w: anfitrion.clientWidth, h: anfitrion.clientHeight, dpr: window.devicePixelRatio || 1 });
+    // 8.0.0: el tamano inicial llega con el primer aviso del ResizeObserver (despues del primer layout natural).
+    // Leer clientWidth (o innerWidth) al arrancar forzaba un layout completo de la pagina ANTES de dibujar las
+    // diapositivas, que luego se repetia: ~140 ms en un celular medio (medido con traza). Hasta tener tamano, los
+    // mensajes al motor esperan en cola.
+    let listo = false, ultimoTam = "";
+    const enCola = [];
+    const conTamano = (fn) => {
+      if (!window.ResizeObserver) { fn(medir()); return; }
+      const ro = new ResizeObserver((e) => {
+        ro.disconnect();
+        const r = e[e.length - 1].contentRect;
+        fn({ w: Math.round(r.width), h: Math.round(r.height), dpr: window.devicePixelRatio || 1 });
+      });
+      ro.observe(anfitrion);
+    };
     function alAviso(msg) {
       if (!msg) return;
       if (msg.tipo === "sin-ondas" && lienzoOndas) lienzoOndas.classList.add("sin-motor");
@@ -705,13 +720,22 @@
         worker = new Worker(op.urlTrabajador);
         red = lienzoRed.transferControlToOffscreen();
         const ondas = (lienzoOndas && lienzoOndas.transferControlToOffscreen) ? lienzoOndas.transferControlToOffscreen() : null;
-        const t = medir();
         worker.onmessage = (ev) => alAviso(ev.data);
         worker.onerror = () => alAviso({ tipo: "sin-red" });
-        worker.postMessage({
-          tipo: "iniciar", red, ondas, modesto, reducido, tema: inicial.tema,
-          escena: inicial, w: t.w, h: t.h, dpr: t.dpr
-        }, ondas ? [red, ondas] : [red]);
+        const w = worker;
+        conTamano((t) => {
+          try {
+            w.postMessage({
+              tipo: "iniciar", red, ondas, modesto, reducido, tema: inicial.tema,
+              escena: inicial, w: t.w, h: t.h, dpr: t.dpr
+            }, ondas ? [red, ondas] : [red]);
+            ultimoTam = t.w + "x" + t.h + "@" + t.dpr;
+            listo = true;
+            enCola.splice(0).forEach((m) => w.postMessage(m));
+          } catch (e) {
+            alAviso({ tipo: "sin-red" });
+          }
+        });
       } catch (e) {
         if (worker) worker.terminate();
         worker = null;
@@ -722,11 +746,16 @@
     }
     if (!worker && !(lienzoRed && lienzoRed.classList.contains("sin-motor"))) {
       local = crearDirector({ red: lienzoRed, ondas: lienzoOndas, modesto, reducido, tema: inicial.tema, avisar: alAviso });
-      const t = medir();
-      local.tam(t.w, t.h, t.dpr);
-      local.escena(inicial);
+      conTamano((t) => {
+        local.tam(t.w, t.h, t.dpr);
+        local.escena(inicial);
+        ultimoTam = t.w + "x" + t.h + "@" + t.dpr;
+        listo = true;
+        enCola.splice(0).forEach((m) => enviar(m));
+      });
     }
     function enviar(msg) {
+      if (!listo) { if (worker || local) enCola.push(msg); return; }
       if (worker) { worker.postMessage(msg); return; }
       if (!local) return;
       if (msg.tipo === "tam") local.tam(msg.w, msg.h, msg.dpr);
@@ -736,15 +765,14 @@
     }
 
     // Tamano
-    let ultimoTam = "";
     const avisarTam = () => {
+      if (!listo) return;
       const t = medir();
       const clave = t.w + "x" + t.h + "@" + t.dpr;
       if (clave === ultimoTam || !t.w || !t.h) return;
       ultimoTam = clave;
       enviar({ tipo: "tam", w: t.w, h: t.h, dpr: t.dpr });
     };
-    ultimoTam = (() => { const t = medir(); return t.w + "x" + t.h + "@" + t.dpr; })();
     if (window.ResizeObserver) new ResizeObserver(avisarTam).observe(anfitrion);
     else window.addEventListener("resize", avisarTam);
 
