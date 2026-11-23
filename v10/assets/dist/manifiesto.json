@@ -1,0 +1,24 @@
+{
+  "version": "10.0.0",
+  "carpeta": "v10",
+  "construido": "2026-11-23T15:13:00.358Z",
+  "herramienta": "16c0264599d4dd1b94160f4c581f7ad636bdec09",
+  "iconos": 156,
+  "fuentes": {
+    "assets/css/visor.css": "0929101f69bedebec203a4c741925496b58d3927",
+    "assets/css/unidad.css": "fd9587d93542ebdf2cab0509e4c9045a016549a1",
+    "assets/css/familias.css": "0cd0d7e7a7505c94333505fb37d9619d77674384",
+    "assets/js/main.js": "38f8d83bdafd0b4cbf76d25864364923bc0ee54d",
+    "assets/js/fondo.js": "d90bbfe294dfebe3228a5cb01e275e28249b4701",
+    "index.dev.html": "fc3a5ef0734ff6a8ff160ebf528a757545915cc2"
+  },
+  "generados": {
+    "index.html": "7e97faebc85d7f6e5554b737f396932d7d078db8",
+    "sw.js": "8bf832805e5389989885f5b9e52c6cdec051d5ca",
+    "assets/dist/visor.min.css": "0e606aaa25b86bccaad812969cf156038f3644ce",
+    "assets/dist/main.min.js": "1c0a06f3e95aed9d85bccdf801653dab656c9a90",
+    "assets/dist/fondo.min.js": "0f835814e834fd726a26150f227748294cc01b81",
+    "assets/dist/iconos-solid.woff2": "17e5d6da11b15ce6e6504d3bb1b0e73125611903",
+    "assets/dist/iconos-regular.woff2": "dbed454bae9019f093f8e33418a8361f641dea96"
+  }
+}
